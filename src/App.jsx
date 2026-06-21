@@ -1,9 +1,13 @@
-import { useState } from 'react';
-import IosFrame from './components/IosFrame';
+import { useMemo, useState } from 'react';
+import LawyerLayout from './components/LawyerLayout';
 import ClientPortal from './screens/ClientPortal';
 import LawyerDashboard from './screens/LawyerDashboard';
+import ClientsView from './screens/ClientsView';
 import CasePage from './screens/CasePage';
 import AddClient from './screens/AddClient';
+import { getClientById } from './data/clients';
+
+const LAWYER_NAME = 'أ. نادين سامي';
 
 function EntrySwitcher({ onSelect }) {
   return (
@@ -70,11 +74,21 @@ function EntrySwitcher({ onSelect }) {
   );
 }
 
+function getScopedClientIdFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('client');
+}
+
 export default function App() {
-  const [mode, setMode] = useState(null); // null | 'lawyer' | 'client'
-  const [lawyerView, setLawyerView] = useState('dashboard'); // 'dashboard' | 'case' | 'add'
+  const scopedClientId = useMemo(() => getScopedClientIdFromUrl(), []);
+  const [mode, setMode] = useState(scopedClientId ? 'client' : null); // null | 'lawyer' | 'client'
+  const [lawyerView, setLawyerView] = useState('dashboard'); // 'dashboard' | 'clients' | 'case' | 'add'
+  const [selectedClientId, setSelectedClientId] = useState(scopedClientId || 'ahmed');
 
   const goHome = () => {
+    if (scopedClientId) {
+      window.history.replaceState(null, '', window.location.pathname);
+    }
     setMode(null);
     setLawyerView('dashboard');
   };
@@ -83,55 +97,68 @@ export default function App() {
     return <EntrySwitcher onSelect={setMode} />;
   }
 
-  let screen;
   if (mode === 'client') {
-    screen = <ClientPortal />;
+    return (
+      <div style={{ minHeight: '100vh', background: '#D9D4CB' }}>
+        {!scopedClientId && (
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 16px 0', fontFamily: "'Almarai',sans-serif" }}>
+            <button
+              type="button"
+              onClick={goHome}
+              style={{ background: 'none', border: 'none', color: 'rgba(28,45,79,0.55)', fontSize: 11, fontWeight: 700, letterSpacing: 0.6, cursor: 'pointer', padding: '6px 10px' }}
+            >
+              ميزان · بوابة العميل — رجوع لاختيار الواجهة
+            </button>
+          </div>
+        )}
+        <ClientPortal client={getClientById(selectedClientId)} lawyerName={LAWYER_NAME} />
+      </div>
+    );
+  }
+
+  const openCase = (id) => {
+    setSelectedClientId(id);
+    setLawyerView('case');
+  };
+
+  let content;
+  if (lawyerView === 'clients') {
+    content = <ClientsView onOpenCase={openCase} />;
   } else if (lawyerView === 'case') {
-    screen = <CasePage onBack={() => setLawyerView('dashboard')} />;
+    content = (
+      <CasePage
+        key={selectedClientId}
+        client={getClientById(selectedClientId)}
+        lawyerName={LAWYER_NAME}
+        onBack={() => setLawyerView('clients')}
+      />
+    );
   } else if (lawyerView === 'add') {
-    screen = (
+    content = (
       <AddClient
         onBack={() => setLawyerView('dashboard')}
         onSubmit={() => setLawyerView('dashboard')}
       />
     );
   } else {
-    screen = (
+    content = (
       <LawyerDashboard
-        onOpenCase={() => setLawyerView('case')}
-        onAddClient={() => setLawyerView('add')}
+        lawyerName={LAWYER_NAME}
+        onOpenCase={openCase}
+        onOpenClients={() => setLawyerView('clients')}
       />
     );
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#D9D4CB' }}>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          padding: '10px 16px 0',
-          fontFamily: "'Almarai',sans-serif",
-        }}
-      >
-        <button
-          type="button"
-          onClick={goHome}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: 'rgba(28,45,79,0.55)',
-            fontSize: 11,
-            fontWeight: 700,
-            letterSpacing: 0.6,
-            cursor: 'pointer',
-            padding: '6px 10px',
-          }}
-        >
-          ميزان · {mode === 'client' ? 'بوابة العميل' : 'واجهة المحامي'} — رجوع لاختيار الواجهة
-        </button>
-      </div>
-      <IosFrame>{screen}</IosFrame>
-    </div>
+    <LawyerLayout
+      activeView={lawyerView === 'case' || lawyerView === 'add' ? 'clients' : lawyerView}
+      onNavigate={setLawyerView}
+      onAddClient={() => setLawyerView('add')}
+      onHome={goHome}
+      lawyerName={LAWYER_NAME}
+    >
+      {content}
+    </LawyerLayout>
   );
 }

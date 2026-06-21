@@ -20,9 +20,9 @@ function DropdownField({ label, value }) {
 
 export default function AddClient({ onBack, onSubmit }) {
   return (
-    <div dir="rtl" style={{ fontFamily: "'Almarai',sans-serif", background: '#F6F4F0', display: 'flex', flexDirection: 'column', minHeight: 874 }}>
+    <div dir="rtl" style={{ fontFamily: "'Almarai',sans-serif", background: '#F6F4F0', display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* Navy nav bar */}
-      <div style={{ background: '#1C2D4F', padding: '62px 16px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexShrink: 0 }}>
+      <div style={{ background: '#1C2D4F', padding: '20px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexShrink: 0 }}>
         <button
           type="button"
           onClick={onBack}
@@ -47,7 +47,7 @@ export default function AddClient({ onBack, onSubmit }) {
       </div>
 
       {/* Scrollable form */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '20px 15px 0' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '20px 15px 0', maxWidth: 640, width: '100%', marginInline: 'auto' }}>
         {/* Card 1: Client Info */}
         <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 2px 16px rgba(0,0,0,0.05)', padding: '18px 16px', marginBottom: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18, paddingBottom: 14, borderBottom: '1px solid #F4F0EA' }}>

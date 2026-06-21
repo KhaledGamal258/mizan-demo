@@ -14,7 +14,7 @@ const initialUpdates = [
 
 const initialMessages = [
   { from: 'client', text: 'صباح الخير أستاذة نادين، هل تم تقديم المذكرة بالفعل؟ أنا قلقان قليلاً', time: '٩:١٥ ص · ١٢ يونيو' },
-  { from: 'lawyer', text: 'صباح النور يا أستاذ أحمد، نعم تم تقديم المذكرة اليوم بنجاح، كل شيء على ما يرام', time: '١٠:٣٢ ص · ١٢ يونيو' },
+  { from: 'lawyer', text: 'صباح النور، نعم تم تقديم المذكرة اليوم بنجاح، كل شيء على ما يرام', time: '١٠:٣٢ ص · ١٢ يونيو' },
   { from: 'client', text: 'شكراً جزيلاً، هل هناك أي مستندات أحتاج لتوقيعها قبل الجلسة؟', time: '٢:٠٠ م · ١٤ يونيو' },
 ];
 
@@ -59,7 +59,7 @@ function NotVisiblePill({ compact }) {
   );
 }
 
-export default function CasePage({ onBack }) {
+export default function CasePage({ client, lawyerName, onBack }) {
   const [docs, setDocs] = useState(initialDocs);
   const [updates, setUpdates] = useState(initialUpdates);
   const [messages, setMessages] = useState(initialMessages);
@@ -81,9 +81,9 @@ export default function CasePage({ onBack }) {
   };
 
   return (
-    <div dir="rtl" style={{ fontFamily: "'Almarai',sans-serif", background: '#F6F4F0', minHeight: 874 }}>
+    <div dir="rtl" style={{ fontFamily: "'Almarai',sans-serif", background: '#F6F4F0' }}>
       {/* NAVY NAV BAR */}
-      <div style={{ background: '#1C2D4F', padding: '62px 16px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+      <div style={{ background: '#1C2D4F', padding: '20px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
         <button
           type="button"
           onClick={onBack}
@@ -96,7 +96,7 @@ export default function CasePage({ onBack }) {
         </button>
         <div style={{ flex: 1, textAlign: 'center' }}>
           <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 10.5, marginBottom: 2 }}>ملف القضية</div>
-          <div style={{ color: '#fff', fontSize: 15, fontWeight: 800, lineHeight: 1.2 }}>قضية تعويض عمالي</div>
+          <div style={{ color: '#fff', fontSize: 15, fontWeight: 800, lineHeight: 1.2 }}>{client.caseTitle}</div>
         </div>
         <div style={{ width: 34, height: 34, borderRadius: 17, background: 'rgba(255,255,255,0.09)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, cursor: 'pointer' }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -107,120 +107,123 @@ export default function CasePage({ onBack }) {
         </div>
       </div>
 
-      <div style={{ padding: '20px 15px 0', display: 'flex', flexDirection: 'column', gap: 22 }}>
+      <div style={{ padding: '20px 16px 0', maxWidth: 1100, marginInline: 'auto', display: 'flex', flexDirection: 'column', gap: 22 }}>
         {/* CASE HEADER CARD */}
         <div style={{ background: '#1C2D4F', borderRadius: 18, overflow: 'hidden', boxShadow: '0 10px 32px rgba(28,45,79,0.24)' }}>
           <div style={{ height: 2.5, background: 'linear-gradient(to left, transparent 0%, #C9A870 20%, #C9A870 80%, transparent 100%)' }} />
           <div style={{ padding: '17px 19px 19px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 13 }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(245,158,11,0.11)', border: '1px solid rgba(245,158,11,0.24)', borderRadius: 20, padding: '4px 12px' }}>
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#F59E0B' }} />
-                <span style={{ color: '#F59E0B', fontSize: 12, fontWeight: 700 }}>قيد النظر</span>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: client.statusBg, border: `1px solid ${client.statusBorder}`, borderRadius: 20, padding: '4px 12px' }}>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: client.statusColor }} />
+                <span style={{ color: client.statusColor, fontSize: 12, fontWeight: 700 }}>{client.status}</span>
               </div>
               <div style={{ textAlign: 'left' }}>
                 <div style={{ color: 'rgba(255,255,255,0.32)', fontSize: 9.5, marginBottom: 3 }}>الجلسة القادمة</div>
-                <div style={{ color: '#C9A870', fontSize: 14, fontWeight: 800, lineHeight: 1 }}>٢٨ يونيو ٢٠٢٦</div>
+                <div style={{ color: '#C9A870', fontSize: 14, fontWeight: 800, lineHeight: 1 }}>{client.nextHearing.full}</div>
               </div>
             </div>
 
-            <div style={{ color: '#fff', fontSize: 18, fontWeight: 800, lineHeight: 1.25, marginBottom: 4 }}>قضية تعويض عمالي</div>
-            <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11.5, marginBottom: 16 }}>أحمد الشريف — رقم القضية: ٢٠٢٤/١٢٣٤٥</div>
+            <div style={{ color: '#fff', fontSize: 18, fontWeight: 800, lineHeight: 1.25, marginBottom: 4 }}>{client.caseTitle}</div>
+            <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11.5, marginBottom: 16 }}>{client.name} — رقم القضية: {client.caseNumber}</div>
 
             <div style={{ background: 'rgba(255,255,255,0.055)', borderRadius: 10, overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 1 }}>
               <div style={{ display: 'flex', gap: 1, background: 'rgba(255,255,255,0.055)' }}>
                 <div style={{ flex: 1, background: '#1C2D4F', padding: '11px 14px' }}>
                   <div style={{ color: '#C9A870', fontSize: 9.5, fontWeight: 700, letterSpacing: 0.5, marginBottom: 5 }}>رقم القضية</div>
-                  <div style={{ color: '#fff', fontSize: 12.5, fontWeight: 700 }}>٢٠٢٤/١٢٣٤٥</div>
+                  <div style={{ color: '#fff', fontSize: 12.5, fontWeight: 700 }}>{client.caseNumber}</div>
                 </div>
                 <div style={{ flex: 1, background: '#1C2D4F', padding: '11px 14px' }}>
                   <div style={{ color: '#C9A870', fontSize: 9.5, fontWeight: 700, letterSpacing: 0.5, marginBottom: 5 }}>تاريخ الرفع</div>
-                  <div style={{ color: '#fff', fontSize: 12.5, fontWeight: 700 }}>٥ مارس ٢٠٢٤</div>
+                  <div style={{ color: '#fff', fontSize: 12.5, fontWeight: 700 }}>{client.filedDate}</div>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 1, background: 'rgba(255,255,255,0.055)' }}>
                 <div style={{ flex: 1, background: '#1C2D4F', padding: '11px 14px' }}>
                   <div style={{ color: '#C9A870', fontSize: 9.5, fontWeight: 700, letterSpacing: 0.5, marginBottom: 5 }}>المحكمة</div>
-                  <div style={{ color: '#fff', fontSize: 12.5, fontWeight: 700 }}>استئناف القاهرة</div>
+                  <div style={{ color: '#fff', fontSize: 12.5, fontWeight: 700 }}>{client.courtShort}</div>
                 </div>
                 <div style={{ flex: 1, background: '#1C2D4F', padding: '11px 14px' }}>
                   <div style={{ color: '#C9A870', fontSize: 9.5, fontWeight: 700, letterSpacing: 0.5, marginBottom: 5 }}>المرحلة الحالية</div>
-                  <div style={{ color: '#fff', fontSize: 12.5, fontWeight: 700 }}>مذكرة الدفاع</div>
+                  <div style={{ color: '#fff', fontSize: 12.5, fontWeight: 700 }}>{client.stage}</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* DOCUMENTS */}
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 13, padding: '0 2px' }}>
-            <span style={{ color: '#1C2D4F', fontSize: 16, fontWeight: 800 }}>المستندات</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(28,45,79,0.07)', borderRadius: 20, padding: '6px 13px', cursor: 'pointer' }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                <path d="M12 5v14M5 12h14" stroke="#1C2D4F" strokeWidth="2.2" strokeLinecap="round" />
-              </svg>
-              <span style={{ color: '#1C2D4F', fontSize: 12, fontWeight: 700, opacity: 0.65 }}>رفع مستند</span>
+        {/* DOCUMENTS + TIMELINE (side by side on desktop) */}
+        <div className="flex lg:grid lg:grid-cols-2 lg:gap-[22px]" style={{ flexDirection: 'column', gap: 22 }}>
+          {/* DOCUMENTS */}
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 13, padding: '0 2px' }}>
+              <span style={{ color: '#1C2D4F', fontSize: 16, fontWeight: 800 }}>المستندات</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(28,45,79,0.07)', borderRadius: 20, padding: '6px 13px', cursor: 'pointer' }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 5v14M5 12h14" stroke="#1C2D4F" strokeWidth="2.2" strokeLinecap="round" />
+                </svg>
+                <span style={{ color: '#1C2D4F', fontSize: 12, fontWeight: 700, opacity: 0.65 }}>رفع مستند</span>
+              </div>
+            </div>
+
+            <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 2px 16px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+              {docs.map((item, idx) => (
+                <div key={item.name}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 13, padding: '13px 15px' }}>
+                    <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(28,45,79,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <FileIcon />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ color: '#1C2D4F', fontSize: 13.5, fontWeight: 700, marginBottom: 3 }}>{item.name}</div>
+                      <div style={{ color: '#9BA3AF', fontSize: 11.5, marginBottom: 10 }}>{item.date} · {item.size}</div>
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => toggleDoc(idx)}
+                        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && toggleDoc(idx)}
+                        style={{ display: 'inline-flex', cursor: 'pointer' }}
+                      >
+                        {item.visible ? <VisiblePill /> : <NotVisiblePill />}
+                      </div>
+                    </div>
+                  </div>
+                  {idx < docs.length - 1 && <div style={{ height: 1, background: '#F0ECE5', margin: '0 15px' }} />}
+                </div>
+              ))}
             </div>
           </div>
 
-          <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 2px 16px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
-            {docs.map((item, idx) => (
-              <div key={item.name}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 13, padding: '13px 15px' }}>
-                  <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(28,45,79,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <FileIcon />
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ color: '#1C2D4F', fontSize: 13.5, fontWeight: 700, marginBottom: 3 }}>{item.name}</div>
-                    <div style={{ color: '#9BA3AF', fontSize: 11.5, marginBottom: 10 }}>{item.date} · {item.size}</div>
-                    <div
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => toggleDoc(idx)}
-                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && toggleDoc(idx)}
-                      style={{ display: 'inline-flex', cursor: 'pointer' }}
-                    >
-                      {item.visible ? <VisiblePill /> : <NotVisiblePill />}
-                    </div>
-                  </div>
-                </div>
-                {idx < docs.length - 1 && <div style={{ height: 1, background: '#F0ECE5', margin: '0 15px' }} />}
-              </div>
-            ))}
-          </div>
-        </div>
+          {/* ACTIVITY TIMELINE */}
+          <div>
+            <div style={{ marginBottom: 13, padding: '0 2px' }}>
+              <span style={{ color: '#1C2D4F', fontSize: 16, fontWeight: 800 }}>سجل النشاط</span>
+            </div>
 
-        {/* ACTIVITY TIMELINE */}
-        <div>
-          <div style={{ marginBottom: 13, padding: '0 2px' }}>
-            <span style={{ color: '#1C2D4F', fontSize: 16, fontWeight: 800 }}>سجل النشاط</span>
-          </div>
-
-          <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 2px 16px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
-            {updates.map((item, idx) => (
-              <div key={item.title} style={{ display: 'flex', alignItems: 'flex-start', gap: 13, padding: '16px 15px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 18, flexShrink: 0 }}>
-                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.dotColor, marginTop: 5, flexShrink: 0 }} />
-                  {idx < updates.length - 1 && <div style={{ flex: 1, width: 1.5, background: '#ECE8E0', marginTop: 7, minHeight: 44 }} />}
-                </div>
-                <div style={{ flex: 1, minWidth: 0, paddingBottom: 2 }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
-                    <div style={{ color: '#1C2D4F', fontSize: 13.5, fontWeight: 700, lineHeight: 1.4, flex: 1 }}>{item.title}</div>
-                    <div
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => toggleUpdate(idx)}
-                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && toggleUpdate(idx)}
-                      style={{ display: 'inline-flex', cursor: 'pointer', flexShrink: 0, marginTop: 2 }}
-                    >
-                      {item.visible ? <VisiblePill compact /> : <NotVisiblePill compact />}
-                    </div>
+            <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 2px 16px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+              {updates.map((item, idx) => (
+                <div key={item.title} style={{ display: 'flex', alignItems: 'flex-start', gap: 13, padding: '16px 15px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 18, flexShrink: 0 }}>
+                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.dotColor, marginTop: 5, flexShrink: 0 }} />
+                    {idx < updates.length - 1 && <div style={{ flex: 1, width: 1.5, background: '#ECE8E0', marginTop: 7, minHeight: 44 }} />}
                   </div>
-                  <div style={{ color: '#5D6579', fontSize: 12.5, lineHeight: 1.6, marginBottom: 6 }}>{item.desc}</div>
-                  <div style={{ color: '#B2B8C2', fontSize: 11 }}>{item.date}</div>
+                  <div style={{ flex: 1, minWidth: 0, paddingBottom: 2 }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
+                      <div style={{ color: '#1C2D4F', fontSize: 13.5, fontWeight: 700, lineHeight: 1.4, flex: 1 }}>{item.title}</div>
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => toggleUpdate(idx)}
+                        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && toggleUpdate(idx)}
+                        style={{ display: 'inline-flex', cursor: 'pointer', flexShrink: 0, marginTop: 2 }}
+                      >
+                        {item.visible ? <VisiblePill compact /> : <NotVisiblePill compact />}
+                      </div>
+                    </div>
+                    <div style={{ color: '#5D6579', fontSize: 12.5, lineHeight: 1.6, marginBottom: 6 }}>{item.desc}</div>
+                    <div style={{ color: '#B2B8C2', fontSize: 11 }}>{item.date}</div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
 
@@ -233,7 +236,7 @@ export default function CasePage({ onBack }) {
           <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 2px 16px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
             <div style={{ padding: '16px 15px 12px', display: 'flex', flexDirection: 'column', gap: 13 }}>
               {messages.map((msg, idx) => {
-                const senderLabel = msg.from === 'client' ? 'أحمد الشريف' : 'أ. نادين سامي';
+                const senderLabel = msg.from === 'client' ? client.name : lawyerName;
                 return msg.from === 'client' ? (
                   <div key={idx} style={{ display: 'flex', justifyContent: 'flex-end' }}>
                     <div style={{ maxWidth: '80%' }}>

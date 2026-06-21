@@ -43,7 +43,7 @@ function FileIcon() {
   );
 }
 
-export default function ClientPortal() {
+export default function ClientPortal({ client, lawyerName }) {
   const [messageText, setMessageText] = useState('');
   const [messageSent, setMessageSent] = useState(false);
 
@@ -54,35 +54,37 @@ export default function ClientPortal() {
   };
 
   return (
-    <div dir="rtl" style={{ fontFamily: "'Almarai',sans-serif", background: '#F6F4F0', paddingBottom: 48 }}>
+    <div dir="rtl" style={{ fontFamily: "'Almarai',sans-serif", background: '#F6F4F0', paddingBottom: 48, minHeight: '100vh' }}>
       {/* App nav bar */}
-      <div style={{ background: '#1C2D4F', padding: '62px 20px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div>
-          <div style={{ color: '#C9A870', fontSize: 11, fontWeight: 700, letterSpacing: 0.8, marginBottom: 3 }}>ملف موكّلك</div>
-          <div style={{ color: '#fff', fontSize: 20, fontWeight: 800, lineHeight: 1 }}>أحمد الشريف</div>
-        </div>
-        <div style={{ width: 38, height: 38, borderRadius: 19, background: 'rgba(201,168,112,0.14)', border: '1.5px solid rgba(201,168,112,0.32)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="8" r="3.5" fill="#C9A870" />
-            <path d="M5 20c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="#C9A870" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
+      <div style={{ background: '#1C2D4F', padding: '20px 20px' }}>
+        <div style={{ maxWidth: 640, marginInline: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <div style={{ color: '#C9A870', fontSize: 11, fontWeight: 700, letterSpacing: 0.8, marginBottom: 3 }}>ملف موكّلك</div>
+            <div style={{ color: '#fff', fontSize: 20, fontWeight: 800, lineHeight: 1 }}>{client.name}</div>
+          </div>
+          <div style={{ width: 38, height: 38, borderRadius: 19, background: 'rgba(201,168,112,0.14)', border: '1.5px solid rgba(201,168,112,0.32)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="8" r="3.5" fill="#C9A870" />
+              <path d="M5 20c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="#C9A870" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </div>
         </div>
       </div>
 
-      <div style={{ padding: '20px 15px 0', display: 'flex', flexDirection: 'column', gap: 26 }}>
+      <div style={{ padding: '20px 15px 0', maxWidth: 640, marginInline: 'auto', display: 'flex', flexDirection: 'column', gap: 26 }}>
         {/* HERO: CASE STATUS CARD */}
         <div style={{ background: '#1C2D4F', borderRadius: 18, overflow: 'hidden', boxShadow: '0 10px 32px rgba(28,45,79,0.24)' }}>
           <div style={{ height: 2.5, background: 'linear-gradient(to left, transparent 0%, #C9A870 20%, #C9A870 80%, transparent 100%)' }} />
           <div style={{ padding: '19px 19px 22px' }}>
             <div style={{ marginBottom: 15 }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(245,158,11,0.11)', border: '1px solid rgba(245,158,11,0.24)', borderRadius: 20, padding: '5px 12px' }}>
-                <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#F59E0B', animation: 'statusBlink 2.2s ease-in-out infinite', flexShrink: 0 }} />
-                <span style={{ color: '#F59E0B', fontSize: 12, fontWeight: 700 }}>قيد النظر</span>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: client.statusBg, border: `1px solid ${client.statusBorder}`, borderRadius: 20, padding: '5px 12px' }}>
+                <div style={{ width: 7, height: 7, borderRadius: '50%', background: client.statusColor, animation: 'statusBlink 2.2s ease-in-out infinite', flexShrink: 0 }} />
+                <span style={{ color: client.statusColor, fontSize: 12, fontWeight: 700 }}>{client.status}</span>
               </div>
             </div>
 
-            <div style={{ color: '#fff', fontSize: 19, fontWeight: 800, lineHeight: 1.35, marginBottom: 5 }}>قضية تعويض عمالي</div>
-            <div style={{ color: 'rgba(255,255,255,0.36)', fontSize: 12, lineHeight: 1.7, marginBottom: 22 }}>رقم القضية: ٢٠٢٤/١٢٣٤٥ · محكمة استئناف القاهرة</div>
+            <div style={{ color: '#fff', fontSize: 19, fontWeight: 800, lineHeight: 1.35, marginBottom: 5 }}>{client.caseTitle}</div>
+            <div style={{ color: 'rgba(255,255,255,0.36)', fontSize: 12, lineHeight: 1.7, marginBottom: 22 }}>رقم القضية: {client.caseNumber} · {client.court}</div>
 
             {/* Stage tracker */}
             <div style={{ position: 'relative', paddingBottom: 2 }}>
@@ -113,8 +115,8 @@ export default function ClientPortal() {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
               <div>
                 <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, marginBottom: 5 }}>الجلسة القادمة</div>
-                <div style={{ color: '#C9A870', fontSize: 22, fontWeight: 800, lineHeight: 1 }}>٢٨ يونيو ٢٠٢٦</div>
-                <div style={{ color: 'rgba(255,255,255,0.36)', fontSize: 12, marginTop: 4 }}>السبت · الساعة ١٠:٠٠ صباحاً</div>
+                <div style={{ color: '#C9A870', fontSize: 22, fontWeight: 800, lineHeight: 1 }}>{client.nextHearing.full}</div>
+                <div style={{ color: 'rgba(255,255,255,0.36)', fontSize: 12, marginTop: 4 }}>{client.nextHearing.dayOfWeek} · الساعة {client.nextHearing.time}</div>
               </div>
               <div style={{ width: 50, height: 50, borderRadius: 12, background: 'rgba(201,168,112,0.1)', border: '1px solid rgba(201,168,112,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -138,7 +140,7 @@ export default function ClientPortal() {
                 </div>
                 <div>
                   <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 10.5 }}>المحامي المسؤول</div>
-                  <div style={{ color: '#fff', fontSize: 13, fontWeight: 700, marginTop: 1 }}>أ. نادين سامي</div>
+                  <div style={{ color: '#fff', fontSize: 13, fontWeight: 700, marginTop: 1 }}>{lawyerName}</div>
                 </div>
               </div>
               <button
