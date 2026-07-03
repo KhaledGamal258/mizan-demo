@@ -21,6 +21,11 @@ export const clients = [
     stage: 'مذكرة الدفاع',
     activeCases: 1,
     nextHearing: { day: '٢٨', month: 'يونيو', full: '٢٨ يونيو ٢٠٢٦', dayOfWeek: 'السبت', time: '١٠:٠٠ صباحاً', timeShort: '١٠:٠٠ ص' },
+    sessions: [
+      { id: 's-ahmed-3', date: { day: '١٥', month: 'مارس', full: '١٥ مارس ٢٠٢٦' }, decision: 'قررت المحكمة التأجيل لإعلان الخصم وتحديد جلسة للمرافعة في الموضوع', nextHearing: { day: '٢٨', month: 'يونيو', full: '٢٨ يونيو ٢٠٢٦' } },
+      { id: 's-ahmed-2', date: { day: '٢٠', month: 'يناير', full: '٢٠ يناير ٢٠٢٦' }, decision: 'مثل وكيل الطرفين وتأجلت القضية لتقديم مذكرات دفاعية مفصّلة', nextHearing: { day: '١٥', month: 'مارس', full: '١٥ مارس ٢٠٢٦' } },
+      { id: 's-ahmed-1', date: { day: '٥', month: 'نوفمبر', full: '٥ نوفمبر ٢٠٢٥' }, decision: 'أمرت المحكمة بضم تقرير خبير الأجور وتأجيل القضية للمرافعة', nextHearing: { day: '٢٠', month: 'يناير', full: '٢٠ يناير ٢٠٢٦' } },
+    ],
   },
   {
     id: 'mona',
@@ -43,6 +48,10 @@ export const clients = [
     stage: 'مرحلة الإثبات',
     activeCases: 1,
     nextHearing: { day: '٢', month: 'يوليو', full: '٢ يوليو ٢٠٢٦', dayOfWeek: 'الخميس', time: '١١:٣٠ صباحاً', timeShort: '١١:٣٠ ص' },
+    sessions: [
+      { id: 's-mona-2', date: { day: '١٠', month: 'مايو', full: '١٠ مايو ٢٠٢٦' }, decision: 'حجزت المحكمة الدعوى للتحقيق في وقائع التسجيل العقاري والمستندات المقدمة', nextHearing: { day: '٢', month: 'يوليو', full: '٢ يوليو ٢٠٢٦' } },
+      { id: 's-mona-1', date: { day: '١٢', month: 'فبراير', full: '١٢ فبراير ٢٠٢٦' }, decision: 'صرّحت المحكمة باستخراج صورة رسمية من محضر التحقيق العقاري', nextHearing: { day: '١٠', month: 'مايو', full: '١٠ مايو ٢٠٢٦' } },
+    ],
   },
   {
     id: 'karim',
@@ -65,6 +74,11 @@ export const clients = [
     stage: 'حجز للحكم',
     activeCases: 1,
     nextHearing: { day: '١٥', month: 'يوليو', full: '١٥ يوليو ٢٠٢٦', dayOfWeek: 'الأربعاء', time: '٩:٠٠ صباحاً', timeShort: '٩:٠٠ ص' },
+    sessions: [
+      { id: 's-karim-3', date: { day: '٨', month: 'يونيو', full: '٨ يونيو ٢٠٢٦' }, decision: 'حجزت الدعوى للحكم لجلسة ١٥ يوليو ٢٠٢٦ بعد انتهاء المرافعات', nextHearing: { day: '١٥', month: 'يوليو', full: '١٥ يوليو ٢٠٢٦' } },
+      { id: 's-karim-2', date: { day: '٢٠', month: 'مارس', full: '٢٠ مارس ٢٠٢٦' }, decision: 'انتهت المرافعات وتقرر حجز القضية لإصدار الحكم في موعده', nextHearing: { day: '٨', month: 'يونيو', full: '٨ يونيو ٢٠٢٦' } },
+      { id: 's-karim-1', date: { day: '١٠', month: 'ديسمبر', full: '١٠ ديسمبر ٢٠٢٥' }, decision: 'قررت المحكمة سماع شهادة شهود الإثبات في الجلسة القادمة', nextHearing: { day: '٢٠', month: 'مارس', full: '٢٠ مارس ٢٠٢٦' } },
+    ],
   },
   {
     id: 'sara',
@@ -87,6 +101,10 @@ export const clients = [
     stage: 'إحالة للخبير',
     activeCases: 1,
     nextHearing: { day: '٥', month: 'يوليو', full: '٥ يوليو ٢٠٢٦', dayOfWeek: 'الأحد', time: '٩:٠٠ صباحاً', timeShort: '٩:٠٠ ص' },
+    sessions: [
+      { id: 's-sara-2', date: { day: '١٥', month: 'مايو', full: '١٥ مايو ٢٠٢٦' }, decision: 'تقررت إحالة الدعوى لهيئة مكتب خبراء وزارة العدل لتقييم قيمة التركة', nextHearing: { day: '٥', month: 'يوليو', full: '٥ يوليو ٢٠٢٦' } },
+      { id: 's-sara-1', date: { day: '٢٠', month: 'مارس', full: '٢٠ مارس ٢٠٢٦' }, decision: 'قررت المحكمة ضم مستندات الوراثة الشرعية وتأجيل النظر في الدعوى', nextHearing: { day: '١٥', month: 'مايو', full: '١٥ مايو ٢٠٢٦' } },
+    ],
   },
   {
     id: 'mahmoud',
@@ -109,6 +127,10 @@ export const clients = [
     stage: 'تبادل المذكرات',
     activeCases: 1,
     nextHearing: { day: '٨', month: 'يوليو', full: '٨ يوليو ٢٠٢٦', dayOfWeek: 'الأربعاء', time: '١٢:٠٠ ظهراً', timeShort: '١٢:٠٠ ظ' },
+    sessions: [
+      { id: 's-mahmoud-2', date: { day: '١٢', month: 'يونيو', full: '١٢ يونيو ٢٠٢٦' }, decision: 'قررت المحكمة التأجيل لتبادل المذكرات وتحديد موعد للمرافعة الختامية', nextHearing: { day: '٨', month: 'يوليو', full: '٨ يوليو ٢٠٢٦' } },
+      { id: 's-mahmoud-1', date: { day: '٣', month: 'مارس', full: '٣ مارس ٢٠٢٦' }, decision: 'أمرت المحكمة باستدعاء الشريك الثالث وإعلانه رسمياً لحضور الجلسات', nextHearing: { day: '١٢', month: 'يونيو', full: '١٢ يونيو ٢٠٢٦' } },
+    ],
   },
   {
     id: 'yasmine',
@@ -131,6 +153,10 @@ export const clients = [
     stage: 'سماع شهود',
     activeCases: 1,
     nextHearing: { day: '١١', month: 'يوليو', full: '١١ يوليو ٢٠٢٦', dayOfWeek: 'السبت', time: '١٠:٣٠ صباحاً', timeShort: '١٠:٣٠ ص' },
+    sessions: [
+      { id: 's-yasmine-2', date: { day: '٢٢', month: 'مايو', full: '٢٢ مايو ٢٠٢٦' }, decision: 'استمعت المحكمة لشاهدي الإثبات وأجّلت لسماع شاهد النفي في الجلسة القادمة', nextHearing: { day: '١١', month: 'يوليو', full: '١١ يوليو ٢٠٢٦' } },
+      { id: 's-yasmine-1', date: { day: '٥', month: 'فبراير', full: '٥ فبراير ٢٠٢٦' }, decision: 'قررت المحكمة سماع شهود الإثبات وإلزام المدعى عليه بالحضور في الجلسة القادمة', nextHearing: { day: '٢٢', month: 'مايو', full: '٢٢ مايو ٢٠٢٦' } },
+    ],
   },
   {
     id: 'tarek',
@@ -153,6 +179,10 @@ export const clients = [
     stage: 'تحقيقات',
     activeCases: 1,
     nextHearing: { day: '١٤', month: 'يوليو', full: '١٤ يوليو ٢٠٢٦', dayOfWeek: 'الثلاثاء', time: '٩:٣٠ صباحاً', timeShort: '٩:٣٠ ص' },
+    sessions: [
+      { id: 's-tarek-2', date: { day: '١٠', month: 'يونيو', full: '١٠ يونيو ٢٠٢٦' }, decision: 'قررت المحكمة التأجيل لاستيفاء التعلق بالحاضرين وضم تقرير البنك الرسمي', nextHearing: { day: '١٤', month: 'يوليو', full: '١٤ يوليو ٢٠٢٦' } },
+      { id: 's-tarek-1', date: { day: '٨', month: 'أبريل', full: '٨ أبريل ٢٠٢٦' }, decision: 'أمرت المحكمة بتحقيق دفع الوفاء بقيمة الشيك وتأجيل القضية لمزيد من التحقيق', nextHearing: { day: '١٠', month: 'يونيو', full: '١٠ يونيو ٢٠٢٦' } },
+    ],
   },
   {
     id: 'rania',
@@ -175,6 +205,11 @@ export const clients = [
     stage: 'حجز للحكم',
     activeCases: 1,
     nextHearing: { day: '٢٠', month: 'يوليو', full: '٢٠ يوليو ٢٠٢٦', dayOfWeek: 'الإثنين', time: '١١:٠٠ صباحاً', timeShort: '١١:٠٠ ص' },
+    sessions: [
+      { id: 's-rania-3', date: { day: '١', month: 'يونيو', full: '١ يونيو ٢٠٢٦' }, decision: 'حجزت المحكمة الدعوى للحكم في ضوء جميع المذكرات والمستندات المقدمة', nextHearing: { day: '٢٠', month: 'يوليو', full: '٢٠ يوليو ٢٠٢٦' } },
+      { id: 's-rania-2', date: { day: '١٠', month: 'مارس', full: '١٠ مارس ٢٠٢٦' }, decision: 'انتهت المرافعات في موضوع الإيجار القديم وتقرر الحجز للحكم', nextHearing: { day: '١', month: 'يونيو', full: '١ يونيو ٢٠٢٦' } },
+      { id: 's-rania-1', date: { day: '١٥', month: 'نوفمبر', full: '١٥ نوفمبر ٢٠٢٥' }, decision: 'قررت المحكمة التأجيل لتقديم مذكرة دفاع شاملة في الموضوع', nextHearing: { day: '١٠', month: 'مارس', full: '١٠ مارس ٢٠٢٦' } },
+    ],
   },
   {
     id: 'hossam',
@@ -197,6 +232,10 @@ export const clients = [
     stage: 'معاينة الخبير',
     activeCases: 1,
     nextHearing: { day: '٢٢', month: 'يوليو', full: '٢٢ يوليو ٢٠٢٦', dayOfWeek: 'الأربعاء', time: '١٠:٠٠ صباحاً', timeShort: '١٠:٠٠ ص' },
+    sessions: [
+      { id: 's-hossam-2', date: { day: '٥', month: 'يونيو', full: '٥ يونيو ٢٠٢٦' }, decision: 'تقررت إحالة الدعوى لخبير متخصص في الأراضي الزراعية لمعاينة الأرض ميدانياً', nextHearing: { day: '٢٢', month: 'يوليو', full: '٢٢ يوليو ٢٠٢٦' } },
+      { id: 's-hossam-1', date: { day: '١٠', month: 'مارس', full: '١٠ مارس ٢٠٢٦' }, decision: 'أمرت المحكمة بضم سند الملكية الأصلي والمستخرج الرسمي من السجل العيني', nextHearing: { day: '٥', month: 'يونيو', full: '٥ يونيو ٢٠٢٦' } },
+    ],
   },
   {
     id: 'dalia',
@@ -219,6 +258,10 @@ export const clients = [
     stage: 'تقرير طبي',
     activeCases: 1,
     nextHearing: { day: '٢٥', month: 'يوليو', full: '٢٥ يوليو ٢٠٢٦', dayOfWeek: 'السبت', time: '٩:٠٠ صباحاً', timeShort: '٩:٠٠ ص' },
+    sessions: [
+      { id: 's-dalia-2', date: { day: '١٥', month: 'يونيو', full: '١٥ يونيو ٢٠٢٦' }, decision: 'قررت المحكمة التأجيل لانتظار التقرير الطبي الشامل من لجنة الخبراء', nextHearing: { day: '٢٥', month: 'يوليو', full: '٢٥ يوليو ٢٠٢٦' } },
+      { id: 's-dalia-1', date: { day: '٢٠', month: 'فبراير', full: '٢٠ فبراير ٢٠٢٦' }, decision: 'أحالت المحكمة القضية لطبيب خبير لتقدير نسبة العجز الدائم وفق الجداول القانونية', nextHearing: { day: '١٥', month: 'يونيو', full: '١٥ يونيو ٢٠٢٦' } },
+    ],
   },
   {
     id: 'omar',
@@ -241,6 +284,10 @@ export const clients = [
     stage: 'تبادل المذكرات',
     activeCases: 1,
     nextHearing: { day: '٢٩', month: 'يوليو', full: '٢٩ يوليو ٢٠٢٦', dayOfWeek: 'الأربعاء', time: '١٢:٣٠ ظهراً', timeShort: '١٢:٣٠ ظ' },
+    sessions: [
+      { id: 's-omar-2', date: { day: '٢٠', month: 'يونيو', full: '٢٠ يونيو ٢٠٢٦' }, decision: 'قررت المحكمة التأجيل لإعلان المدعى عليه الغائب بالطرق القانونية المقررة', nextHearing: { day: '٢٩', month: 'يوليو', full: '٢٩ يوليو ٢٠٢٦' } },
+      { id: 's-omar-1', date: { day: '٢', month: 'مارس', full: '٢ مارس ٢٠٢٦' }, decision: 'صرّحت المحكمة باستخراج صورة رسمية من قيد الوفاة وورقة الوراثة الشرعية', nextHearing: { day: '٢٠', month: 'يونيو', full: '٢٠ يونيو ٢٠٢٦' } },
+    ],
   },
 ];
 

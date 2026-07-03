@@ -18,6 +18,20 @@ const initialMessages = [
   { from: 'client', text: 'شكراً جزيلاً، هل هناك أي مستندات أحتاج لتوقيعها قبل الجلسة؟', time: '٢:٠٠ م · ١٤ يونيو' },
 ];
 
+const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+
+function toArNum(n) {
+  return String(n).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]);
+}
+
+function buildDateObj(iso) {
+  const d = new Date(iso);
+  const day = d.getUTCDate();
+  const month = AR_MONTHS[d.getUTCMonth()];
+  const year = d.getUTCFullYear();
+  return { day: toArNum(day), month, full: `${toArNum(day)} ${month} ${toArNum(year)}` };
+}
+
 function FileIcon() {
   return (
     <svg width="18" height="22" viewBox="0 0 18 22" fill="none">
@@ -59,11 +73,16 @@ function NotVisiblePill({ compact }) {
   );
 }
 
-export default function CasePage({ client, lawyerName, onBack }) {
+export default function CasePage({ client, lawyerName, onBack, sessions = [], onAddSession }) {
   const [docs, setDocs] = useState(initialDocs);
   const [updates, setUpdates] = useState(initialUpdates);
   const [messages, setMessages] = useState(initialMessages);
   const [replyText, setReplyText] = useState('');
+
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [formDate, setFormDate] = useState('');
+  const [formDecision, setFormDecision] = useState('');
+  const [formNextDate, setFormNextDate] = useState('');
 
   const toggleDoc = (idx) => {
     setDocs(docs.map((d, i) => (i === idx ? { ...d, visible: !d.visible } : d)));
@@ -78,6 +97,43 @@ export default function CasePage({ client, lawyerName, onBack }) {
     if (!text) return;
     setMessages([...messages, { from: 'lawyer', text, time: 'الآن' }]);
     setReplyText('');
+  };
+
+  const handleSaveSession = () => {
+    if (!formDecision.trim()) return;
+    const dateObj = formDate ? buildDateObj(formDate) : { day: '', month: '', full: 'تاريخ غير محدد' };
+    const nextHearingObj = formNextDate ? buildDateObj(formNextDate) : null;
+    const newSession = {
+      id: `s-dynamic-${Date.now()}`,
+      date: dateObj,
+      decision: formDecision.trim(),
+      nextHearing: nextHearingObj,
+    };
+    if (onAddSession) onAddSession(newSession);
+    setFormDate('');
+    setFormDecision('');
+    setFormNextDate('');
+    setShowAddForm(false);
+  };
+
+  const cancelForm = () => {
+    setShowAddForm(false);
+    setFormDate('');
+    setFormDecision('');
+    setFormNextDate('');
+  };
+
+  const inputStyle = {
+    width: '100%',
+    background: '#fff',
+    border: '1.5px solid #E8E4DC',
+    borderRadius: 8,
+    padding: '8px 10px',
+    fontFamily: "'Almarai',sans-serif",
+    fontSize: 13,
+    color: '#1C2D4F',
+    outline: 'none',
+    boxSizing: 'border-box',
   };
 
   return (
@@ -148,6 +204,121 @@ export default function CasePage({ client, lawyerName, onBack }) {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* SESSIONS LOG */}
+        <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 2px 16px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+          <div style={{ height: 2.5, background: 'linear-gradient(to left, transparent 0%, #C9A870 20%, #C9A870 80%, transparent 100%)' }} />
+          <div style={{ padding: '15px 15px 0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 15 }}>
+              <span style={{ color: '#1C2D4F', fontSize: 16, fontWeight: 800 }}>سجل الجلسات</span>
+              <button
+                type="button"
+                onClick={() => setShowAddForm((f) => !f)}
+                style={{ display: 'flex', alignItems: 'center', gap: 6, background: showAddForm ? 'rgba(28,45,79,0.12)' : 'rgba(28,45,79,0.07)', border: 'none', borderRadius: 20, padding: '6px 13px', cursor: 'pointer' }}
+              >
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 5v14M5 12h14" stroke="#1C2D4F" strokeWidth="2.4" strokeLinecap="round" />
+                </svg>
+                <span style={{ color: '#1C2D4F', fontSize: 12, fontWeight: 700, opacity: 0.7, fontFamily: "'Almarai',sans-serif" }}>إضافة جلسة</span>
+              </button>
+            </div>
+
+            {showAddForm && (
+              <div style={{ background: '#F6F4F0', borderRadius: 10, padding: '14px', marginBottom: 16, border: '1px solid #E8E4DC' }}>
+                <div style={{ color: '#1C2D4F', fontSize: 13, fontWeight: 700, marginBottom: 12 }}>تسجيل جلسة جديدة</div>
+                <div style={{ display: 'flex', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
+                  <div style={{ flex: '1 1 140px' }}>
+                    <div style={{ color: '#9BA3AF', fontSize: 11, fontWeight: 700, marginBottom: 5 }}>تاريخ الجلسة</div>
+                    <input type="date" value={formDate} onChange={(e) => setFormDate(e.target.value)} style={inputStyle} />
+                  </div>
+                  <div style={{ flex: '1 1 140px' }}>
+                    <div style={{ color: '#9BA3AF', fontSize: 11, fontWeight: 700, marginBottom: 5 }}>الجلسة القادمة</div>
+                    <input type="date" value={formNextDate} onChange={(e) => setFormNextDate(e.target.value)} style={inputStyle} />
+                  </div>
+                </div>
+                <div style={{ marginBottom: 12 }}>
+                  <div style={{ color: '#9BA3AF', fontSize: 11, fontWeight: 700, marginBottom: 5 }}>
+                    قرار الجلسة <span style={{ color: '#EF4444' }}>*</span>
+                  </div>
+                  <textarea
+                    value={formDecision}
+                    onChange={(e) => setFormDecision(e.target.value)}
+                    rows={3}
+                    placeholder="اكتب قرار المحكمة في هذه الجلسة..."
+                    style={{ ...inputStyle, resize: 'none', lineHeight: 1.6 }}
+                  />
+                </div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    type="button"
+                    onClick={handleSaveSession}
+                    disabled={!formDecision.trim()}
+                    style={{
+                      background: formDecision.trim() ? '#1C2D4F' : '#E8E4DC',
+                      color: formDecision.trim() ? '#C9A870' : '#B2B8C2',
+                      border: 'none',
+                      borderRadius: 20,
+                      padding: '8px 18px',
+                      fontSize: 13,
+                      fontWeight: 700,
+                      fontFamily: "'Almarai',sans-serif",
+                      cursor: formDecision.trim() ? 'pointer' : 'not-allowed',
+                    }}
+                  >
+                    حفظ الجلسة
+                  </button>
+                  <button
+                    type="button"
+                    onClick={cancelForm}
+                    style={{ background: 'transparent', border: '1.5px solid #E8E4DC', borderRadius: 20, padding: '8px 18px', fontSize: 13, fontWeight: 700, fontFamily: "'Almarai',sans-serif", color: '#9BA3AF', cursor: 'pointer' }}
+                  >
+                    إلغاء
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {sessions.length === 0 && !showAddForm ? (
+              <div style={{ textAlign: 'center', padding: '24px 16px', color: '#B2B8C2', fontSize: 13 }}>
+                لا توجد جلسات مسجلة بعد — أضف أول جلسة
+              </div>
+            ) : (
+              sessions.map((session, idx) => (
+                <div
+                  key={session.id}
+                  style={{
+                    display: 'flex',
+                    gap: 13,
+                    paddingBottom: 16,
+                    marginBottom: idx < sessions.length - 1 ? 0 : 0,
+                    borderBottom: idx < sessions.length - 1 ? '1px solid #F0ECE5' : 'none',
+                    paddingTop: idx > 0 ? 16 : 0,
+                  }}
+                >
+                  <div style={{ width: 38, flexShrink: 0, textAlign: 'center', paddingTop: 2 }}>
+                    <div style={{ color: '#1C2D4F', fontSize: 19, fontWeight: 800, lineHeight: 1 }}>{session.date.day}</div>
+                    <div style={{ color: '#9BA3AF', fontSize: 9.5, marginTop: 2 }}>{session.date.month}</div>
+                  </div>
+                  <div style={{ width: 1, background: 'rgba(201,168,112,0.3)', alignSelf: 'stretch', flexShrink: 0 }} />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ color: '#1C2D4F', fontSize: 13, fontWeight: 700, lineHeight: 1.6, marginBottom: session.nextHearing ? 8 : 0 }}>{session.decision}</div>
+                    {session.nextHearing && (
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(201,168,112,0.09)', border: '1px solid rgba(201,168,112,0.25)', borderRadius: 20, padding: '3px 10px' }}>
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                          <rect x="3" y="5" width="18" height="16" rx="2" stroke="#B5924A" strokeWidth="1.8" />
+                          <path d="M3 10h18M8 3v3M16 3v3" stroke="#B5924A" strokeWidth="1.8" strokeLinecap="round" />
+                        </svg>
+                        <span style={{ color: '#B5924A', fontSize: 11, fontWeight: 700 }}>الجلسة القادمة: {session.nextHearing.full}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+
+            <div style={{ height: sessions.length === 0 && !showAddForm ? 0 : 8 }} />
           </div>
         </div>
 

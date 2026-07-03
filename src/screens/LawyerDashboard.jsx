@@ -1,6 +1,6 @@
-import { upcomingHearings } from '../data/clients';
+import { upcomingHearings as upcomingHearingsDefault } from '../data/clients';
 
-export default function LawyerDashboard({ lawyerName, onOpenCase, onOpenClients }) {
+export default function LawyerDashboard({ lawyerName, onOpenCase, onOpenClients, upcomingHearings = upcomingHearingsDefault }) {
   return (
     <div dir="rtl" style={{ fontFamily: "'Almarai',sans-serif", padding: '20px 16px 40px', display: 'flex', flexDirection: 'column', gap: 22 }}>
       {/* Greeting + stats hero card */}

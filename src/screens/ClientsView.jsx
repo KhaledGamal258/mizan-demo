@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { clients, caseTypes, courts, governorates } from '../data/clients';
+import { clients as clientsDefault, caseTypes, courts, governorates } from '../data/clients';
 
 function buildClientLink(id) {
   const base = import.meta.env.BASE_URL;
@@ -20,7 +20,7 @@ function selectStyle() {
   };
 }
 
-export default function ClientsView({ onOpenCase }) {
+export default function ClientsView({ onOpenCase, allClients = clientsDefault }) {
   const [search, setSearch] = useState('');
   const [caseType, setCaseType] = useState('');
   const [court, setCourt] = useState('');
@@ -28,14 +28,14 @@ export default function ClientsView({ onOpenCase }) {
   const [copiedId, setCopiedId] = useState(null);
 
   const filtered = useMemo(() => {
-    return clients.filter((c) => {
+    return allClients.filter((c) => {
       if (search.trim() && !c.name.includes(search.trim())) return false;
       if (caseType && c.caseType !== caseType) return false;
       if (court && c.court !== court) return false;
       if (governorate && c.governorate !== governorate) return false;
       return true;
     });
-  }, [search, caseType, court, governorate]);
+  }, [allClients, search, caseType, court, governorate]);
 
   const onCopyLink = async (id) => {
     const link = buildClientLink(id);
@@ -52,7 +52,7 @@ export default function ClientsView({ onOpenCase }) {
     <div style={{ padding: '20px 16px 40px', display: 'flex', flexDirection: 'column', gap: 18 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
         <span style={{ color: '#1C2D4F', fontSize: 18, fontWeight: 800 }}>الموكّلون</span>
-        <span style={{ color: '#9BA3AF', fontSize: 12.5 }}>{filtered.length} من {clients.length}</span>
+        <span style={{ color: '#9BA3AF', fontSize: 12.5 }}>{filtered.length} من {allClients.length}</span>
       </div>
 
       {/* Filters */}

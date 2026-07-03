@@ -5,7 +5,7 @@ import LawyerDashboard from './screens/LawyerDashboard';
 import ClientsView from './screens/ClientsView';
 import CasePage from './screens/CasePage';
 import AddClient from './screens/AddClient';
-import { getClientById } from './data/clients';
+import { clients as clientsData, getClientById, upcomingHearings as upcomingHearingsDefault } from './data/clients';
 
 const LAWYER_NAME = 'أ. نادين سامي';
 
@@ -81,9 +81,40 @@ function getScopedClientIdFromUrl() {
 
 export default function App() {
   const scopedClientId = useMemo(() => getScopedClientIdFromUrl(), []);
-  const [mode, setMode] = useState(scopedClientId ? 'client' : null); // null | 'lawyer' | 'client'
-  const [lawyerView, setLawyerView] = useState('dashboard'); // 'dashboard' | 'clients' | 'case' | 'add'
+  const [mode, setMode] = useState(scopedClientId ? 'client' : null);
+  const [lawyerView, setLawyerView] = useState('dashboard');
   const [selectedClientId, setSelectedClientId] = useState(scopedClientId || 'ahmed');
+
+  // Sessions added during this session, keyed by clientId
+  const [sessionsMap, setSessionsMap] = useState({});
+  // nextHearing overrides updated when a session with a nextHearing is saved
+  const [hearingOverrides, setHearingOverrides] = useState({});
+
+  const getMergedClient = (id) => {
+    const base = getClientById(id);
+    if (!base) return base;
+    const override = hearingOverrides[id];
+    return override ? { ...base, nextHearing: override } : base;
+  };
+
+  const getMergedSessions = (id) => {
+    const dynamic = sessionsMap[id] || [];
+    const base = getClientById(id)?.sessions || [];
+    return [...dynamic, ...base];
+  };
+
+  const handleAddSession = (clientId, session) => {
+    setSessionsMap((prev) => ({
+      ...prev,
+      [clientId]: [session, ...(prev[clientId] || [])],
+    }));
+    if (session.nextHearing) {
+      setHearingOverrides((prev) => ({ ...prev, [clientId]: session.nextHearing }));
+    }
+  };
+
+  const mergedUpcomingHearings = upcomingHearingsDefault.map((h) => getMergedClient(h.id));
+  const mergedAllClients = clientsData.map((c) => getMergedClient(c.id));
 
   const goHome = () => {
     if (scopedClientId) {
@@ -111,7 +142,7 @@ export default function App() {
             </button>
           </div>
         )}
-        <ClientPortal client={getClientById(selectedClientId)} lawyerName={LAWYER_NAME} />
+        <ClientPortal client={getMergedClient(selectedClientId)} lawyerName={LAWYER_NAME} />
       </div>
     );
   }
@@ -123,14 +154,16 @@ export default function App() {
 
   let content;
   if (lawyerView === 'clients') {
-    content = <ClientsView onOpenCase={openCase} />;
+    content = <ClientsView onOpenCase={openCase} allClients={mergedAllClients} />;
   } else if (lawyerView === 'case') {
     content = (
       <CasePage
         key={selectedClientId}
-        client={getClientById(selectedClientId)}
+        client={getMergedClient(selectedClientId)}
         lawyerName={LAWYER_NAME}
         onBack={() => setLawyerView('clients')}
+        sessions={getMergedSessions(selectedClientId)}
+        onAddSession={(session) => handleAddSession(selectedClientId, session)}
       />
     );
   } else if (lawyerView === 'add') {
@@ -146,6 +179,7 @@ export default function App() {
         lawyerName={LAWYER_NAME}
         onOpenCase={openCase}
         onOpenClients={() => setLawyerView('clients')}
+        upcomingHearings={mergedUpcomingHearings}
       />
     );
   }
