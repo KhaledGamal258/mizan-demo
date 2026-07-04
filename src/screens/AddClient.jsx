@@ -1,24 +1,45 @@
-function ChevronDown() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <path d="M6 9l6 6 6-6" stroke="#9BA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
+import { useState } from 'react';
+import { caseTypes, courts, governorates } from '../data/clients';
+
+const AR_MONTHS = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+
+function toArNum(n) {
+  return String(n).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]);
 }
 
-function DropdownField({ label, value }) {
+function formatArabicDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return `${toArNum(d.getUTCDate())} ${AR_MONTHS[d.getUTCMonth()]} ${toArNum(d.getUTCFullYear())}`;
+}
+
+const fieldLabelStyle = { color: '#1C2D4F', fontSize: 12.5, fontWeight: 700, marginBottom: 7 };
+const fieldBoxStyle = { width: '100%', background: '#fff', border: '1.5px solid #E8E4DC', borderRadius: 10, padding: '12px 14px', fontFamily: "'Almarai',sans-serif", fontSize: 13.5, color: '#1C2D4F', boxSizing: 'border-box', outline: 'none' };
+
+function SelectField({ label, value, onChange, options, placeholder }) {
   return (
     <div style={{ marginBottom: 14 }}>
-      <div style={{ color: '#1C2D4F', fontSize: 12.5, fontWeight: 700, marginBottom: 7 }}>{label}</div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff', border: '1.5px solid #E8E4DC', borderRadius: 10, padding: '12px 14px', cursor: 'pointer' }}>
-        <span style={{ color: '#1C2D4F', fontSize: 13.5 }}>{value}</span>
-        <ChevronDown />
-      </div>
+      <div style={fieldLabelStyle}>{label}</div>
+      <select value={value} onChange={onChange} style={{ ...fieldBoxStyle, cursor: 'pointer', appearance: 'auto' }}>
+        <option value="">{placeholder}</option>
+        {options.map((opt) => (
+          <option key={opt} value={opt}>{opt}</option>
+        ))}
+      </select>
     </div>
   );
 }
 
 export default function AddClient({ onBack, onSubmit }) {
+  const [name, setName] = useState('أحمد محمود الشريف');
+  const [phone, setPhone] = useState('0122 345 6789');
+  const [email, setEmail] = useState('');
+  const [caseTitle, setCaseTitle] = useState('قضية تعويض عمالي');
+  const [caseType, setCaseType] = useState('عمالية');
+  const [court, setCourt] = useState('محكمة استئناف القاهرة');
+  const [governorate, setGovernorate] = useState('القاهرة');
+  const [hearingDate, setHearingDate] = useState('2026-06-28');
+
   return (
     <div dir="rtl" style={{ fontFamily: "'Almarai',sans-serif", background: '#F6F4F0', display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* Navy nav bar */}
@@ -56,21 +77,23 @@ export default function AddClient({ onBack, onSubmit }) {
           </div>
 
           <div style={{ marginBottom: 14 }}>
-            <div style={{ color: '#1C2D4F', fontSize: 12.5, fontWeight: 700, marginBottom: 7 }}>الاسم الكامل</div>
+            <div style={fieldLabelStyle}>الاسم الكامل</div>
             <input
               type="text"
-              defaultValue="أحمد محمود الشريف"
-              style={{ width: '100%', background: '#fff', border: '1.5px solid #E8E4DC', borderRadius: 10, padding: '12px 14px', fontFamily: "'Almarai',sans-serif", fontSize: 13.5, color: '#1C2D4F', boxSizing: 'border-box', outline: 'none' }}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              style={fieldBoxStyle}
             />
           </div>
 
           <div style={{ marginBottom: 14 }}>
-            <div style={{ color: '#1C2D4F', fontSize: 12.5, fontWeight: 700, marginBottom: 7 }}>رقم الهاتف</div>
+            <div style={fieldLabelStyle}>رقم الهاتف</div>
             <div style={{ display: 'flex', border: '1.5px solid #E8E4DC', borderRadius: 10, overflow: 'hidden' }}>
               <div style={{ padding: '12px 14px', background: '#F6F4F0', borderLeft: '1.5px solid #E8E4DC', color: '#5D6579', fontSize: 13.5, fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0 }}>+٢٠</div>
               <input
                 type="tel"
-                defaultValue="0122 345 6789"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
                 style={{ flex: 1, minWidth: 0, background: '#fff', border: 'none', padding: '12px 12px', fontFamily: "'Almarai',sans-serif", fontSize: 13.5, color: '#1C2D4F', outline: 'none', direction: 'ltr', textAlign: 'left' }}
               />
             </div>
@@ -83,8 +106,10 @@ export default function AddClient({ onBack, onSubmit }) {
             </div>
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="example@email.com"
-              style={{ width: '100%', background: '#fff', border: '1.5px solid #E8E4DC', borderRadius: 10, padding: '12px 14px', fontFamily: "'Almarai',sans-serif", fontSize: 13, color: '#9BA3AF', boxSizing: 'border-box', outline: 'none', direction: 'ltr', textAlign: 'right' }}
+              style={{ ...fieldBoxStyle, color: email ? '#1C2D4F' : '#9BA3AF', direction: 'ltr', textAlign: 'right' }}
             />
           </div>
         </div>
@@ -97,30 +122,32 @@ export default function AddClient({ onBack, onSubmit }) {
           </div>
 
           <div style={{ marginBottom: 14 }}>
-            <div style={{ color: '#1C2D4F', fontSize: 12.5, fontWeight: 700, marginBottom: 7 }}>عنوان القضية</div>
+            <div style={fieldLabelStyle}>عنوان القضية</div>
             <input
               type="text"
-              defaultValue="قضية تعويض عمالي"
-              style={{ width: '100%', background: '#fff', border: '1.5px solid #1C2D4F', borderRadius: 10, padding: '12px 14px', fontFamily: "'Almarai',sans-serif", fontSize: 13.5, color: '#1C2D4F', boxSizing: 'border-box', outline: 'none', boxShadow: '0 0 0 3px rgba(28,45,79,0.08)' }}
+              value={caseTitle}
+              onChange={(e) => setCaseTitle(e.target.value)}
+              style={{ ...fieldBoxStyle, border: '1.5px solid #1C2D4F', boxShadow: '0 0 0 3px rgba(28,45,79,0.08)' }}
             />
           </div>
 
-          <DropdownField label="نوع القضية" value="قضية عمالية" />
-          <DropdownField label="المحكمة" value="محكمة استئناف" />
-          <DropdownField label="المحافظة" value="القاهرة" />
+          <SelectField label="نوع القضية" value={caseType} onChange={(e) => setCaseType(e.target.value)} options={caseTypes} placeholder="اختر نوع القضية" />
+          <SelectField label="المحكمة" value={court} onChange={(e) => setCourt(e.target.value)} options={courts} placeholder="اختر المحكمة" />
+          <SelectField label="المحافظة" value={governorate} onChange={(e) => setGovernorate(e.target.value)} options={governorates} placeholder="اختر المحافظة" />
 
           <div>
-            <div style={{ color: '#1C2D4F', fontSize: 12.5, fontWeight: 700, marginBottom: 7 }}>موعد الجلسة القادمة</div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff', border: '1.5px solid #E8E4DC', borderRadius: 10, padding: '12px 14px', cursor: 'pointer' }}>
-              <span style={{ color: '#1C2D4F', fontSize: 13.5 }}>٢٨ / ٠٦ / ٢٠٢٦</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="5" width="18" height="16" rx="2.5" stroke="#C9A870" strokeWidth="1.5" />
-                <path d="M3 10h18" stroke="#C9A870" strokeWidth="1.5" />
-                <path d="M8 3v3M16 3v3" stroke="#C9A870" strokeWidth="1.5" strokeLinecap="round" />
-                <rect x="7" y="14" width="2" height="2" rx="0.5" fill="#C9A870" />
-                <rect x="11" y="14" width="2" height="2" rx="0.5" fill="#C9A870" />
-              </svg>
+            <div style={fieldLabelStyle}>موعد الجلسة القادمة</div>
+            <div style={{ position: 'relative' }}>
+              <input
+                type="date"
+                value={hearingDate}
+                onChange={(e) => setHearingDate(e.target.value)}
+                style={{ ...fieldBoxStyle, cursor: 'pointer' }}
+              />
             </div>
+            {hearingDate && (
+              <div style={{ color: '#9BA3AF', fontSize: 11.5, marginTop: 6 }}>{formatArabicDate(hearingDate)}</div>
+            )}
           </div>
         </div>
 

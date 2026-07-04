@@ -420,9 +420,31 @@ export const clients = [
   },
 ];
 
-export const caseTypes = [...new Set(clients.map((c) => c.caseType))];
-export const courts = [...new Set(clients.map((c) => c.court))];
-export const governorates = [...new Set(clients.map((c) => c.governorate))];
+// Full option lists for forms/filters — not derived from seeded clients only,
+// so rarer values (e.g. إدارية courts) are always selectable even if no demo
+// case currently uses them.
+export const caseTypes = ['عمالية', 'عقارية', 'أحوال شخصية', 'إرث وتركات', 'تجارية', 'جنائية', 'إدارية', 'مدنية'];
+
+export const courts = [
+  'محكمة النقض',
+  'المحكمة الدستورية العليا',
+  'محكمة استئناف القاهرة',
+  'محكمة استئناف الإسكندرية',
+  'المحكمة الابتدائية',
+  'محكمة الأسرة',
+  'محكمة الجنايات',
+  'القضاء الإداري',
+  'المحكمة الإدارية العليا',
+  'مجلس الدولة',
+];
+
+export const governorates = [
+  'القاهرة', 'الجيزة', 'الإسكندرية', 'الدقهلية', 'الشرقية', 'القليوبية',
+  'كفر الشيخ', 'الغربية', 'المنوفية', 'البحيرة', 'الإسماعيلية', 'بورسعيد',
+  'السويس', 'دمياط', 'بني سويف', 'الفيوم', 'المنيا', 'أسيوط', 'سوهاج',
+  'قنا', 'الأقصر', 'أسوان', 'البحر الأحمر', 'الوادي الجديد', 'مطروح',
+  'شمال سيناء', 'جنوب سيناء',
+];
 
 export function getClientById(id) {
   return clients.find((c) => c.id === id) || clients[0];
