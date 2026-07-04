@@ -3,6 +3,7 @@ import { team, getTeamMemberById, CASE_STATUS_OPTIONS } from '../data/clients';
 import { buildDateObj } from '../utils/arabicDate';
 import { openMockDocument, getFileTypeLabel } from '../utils/mockFiles';
 import { generateId } from '../utils/id';
+import { getDaysRemaining, getAppealUrgency, getUrgencyStyle, formatDeadlineMessage } from '../utils/deadlines';
 
 const initialDocs = [
   { id: 'doc-1', name: 'عقد العمل الأصلي', date: '١٥ مايو ٢٠٢٦', size: '2.4 MB', visible: true, type: 'pdf' },
@@ -85,6 +86,11 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
   const [finishPromptDismissed, setFinishPromptDismissed] = useState(false);
 
   const showFinishPrompt = client.status === 'منتهية' && !archived && !finishPromptDismissed;
+
+  const appealDaysLeft = client.appealDeadline ? getDaysRemaining(client.appealDeadline) : null;
+  const showAppealBanner = !archived && appealDaysLeft !== null && appealDaysLeft <= 10;
+  const appealUrgency = showAppealBanner ? getAppealUrgency(appealDaysLeft) : null;
+  const appealStyle = showAppealBanner ? getUrgencyStyle(appealUrgency) : null;
 
   const handleStatusSelect = (key) => {
     setStatusMenuOpen(false);
@@ -376,6 +382,37 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
             </div>
           </div>
         </div>
+
+        {showAppealBanner && (
+          <div
+            style={{
+              background: appealStyle.bg,
+              border: `2px solid ${appealStyle.border}`,
+              borderRadius: 14,
+              padding: '14px 16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              animation: appealUrgency === 'critical' || appealUrgency === 'overdue' ? 'appealPulse 2s ease-in-out infinite' : 'none',
+            }}
+          >
+            <style>{`@keyframes appealPulse { 0%,100% { box-shadow: 0 0 0 0 ${appealStyle.border}55; } 50% { box-shadow: 0 0 0 6px ${appealStyle.border}00; } }`}</style>
+            <div style={{ width: 38, height: 38, borderRadius: 10, background: appealStyle.icon, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="#fff" strokeWidth="1.8" strokeLinejoin="round" />
+                <path d="M12 9v4M12 17h.01" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ color: appealStyle.text, fontSize: 14, fontWeight: 800, lineHeight: 1.4 }}>
+                {formatDeadlineMessage(appealDaysLeft, client.appealLabel || 'الاستئناف')}
+              </div>
+              <div style={{ color: appealStyle.text, opacity: 0.75, fontSize: 11.5, marginTop: 2 }}>
+                تاريخ الميعاد: {new Date(client.appealDeadline).toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </div>
+            </div>
+          </div>
+        )}
 
         {showFinishPrompt && (
           <div style={{ background: 'rgba(22,163,74,0.07)', border: '1.5px solid rgba(22,163,74,0.25)', borderRadius: 14, padding: '13px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>

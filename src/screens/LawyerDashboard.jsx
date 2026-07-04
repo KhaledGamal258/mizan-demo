@@ -1,14 +1,17 @@
 import { useState } from 'react';
 import { upcomingHearings as upcomingHearingsDefault, getTeamMemberById } from '../data/clients';
+import { getUrgentDeadlines, getUrgencyStyle, formatDeadlineMessage } from '../utils/deadlines';
 
 const OWNER_ID = 'nadine';
 
-export default function LawyerDashboard({ lawyerName, onOpenCase, onOpenClients, upcomingHearings = upcomingHearingsDefault }) {
+export default function LawyerDashboard({ lawyerName, onOpenCase, onOpenClients, upcomingHearings = upcomingHearingsDefault, allClients = [] }) {
   const [filter, setFilter] = useState('all'); // 'all' | 'mine'
 
   const displayedHearings = filter === 'mine'
     ? upcomingHearings.filter((h) => h.assignedTo === OWNER_ID)
     : upcomingHearings;
+
+  const urgentDeadlines = getUrgentDeadlines(allClients);
 
   return (
     <div dir="rtl" style={{ fontFamily: "'Almarai',sans-serif", padding: '20px 16px 40px', display: 'flex', flexDirection: 'column', gap: 22 }}>
@@ -51,6 +54,42 @@ export default function LawyerDashboard({ lawyerName, onOpenCase, onOpenClients,
           </div>
         </div>
       </div>
+
+      {/* Urgent appeal/deadline alerts */}
+      {urgentDeadlines.length > 0 && (
+        <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 2px 16px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+          <div style={{ padding: '15px 16px 6px', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="#EF4444" strokeWidth="1.8" strokeLinejoin="round" />
+              <path d="M12 9v4M12 17h.01" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            <span style={{ color: '#1C2D4F', fontSize: 15, fontWeight: 800 }}>مواعيد عاجلة</span>
+          </div>
+          <div style={{ padding: '6px 8px 10px' }}>
+            {urgentDeadlines.map(({ client, daysLeft }) => {
+              const style = getUrgencyStyle(daysLeft < 0 ? 'overdue' : daysLeft <= 3 ? 'critical' : daysLeft <= 7 ? 'warning' : 'soft');
+              return (
+                <div
+                  key={client.id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => onOpenCase(client.id)}
+                  onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onOpenCase(client.id)}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, background: style.bg, border: `1px solid ${style.border}`, borderRadius: 10, padding: '10px 12px', margin: '4px 8px', cursor: 'pointer' }}
+                >
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: style.icon, flexShrink: 0 }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ color: style.text, fontSize: 12.5, fontWeight: 800, marginBottom: 2 }}>
+                      {formatDeadlineMessage(daysLeft, client.appealLabel || 'الاستئناف')}
+                    </div>
+                    <div style={{ color: style.text, opacity: 0.75, fontSize: 11 }}>{client.name} — {client.caseTitle}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Upcoming hearings */}
       <div style={{ background: '#1C2D4F', borderRadius: 18, overflow: 'hidden', boxShadow: '0 10px 32px rgba(28,45,79,0.24)' }}>

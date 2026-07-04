@@ -46,6 +46,8 @@ export const clients = [
     stage: 'مذكرة الدفاع',
     activeCases: 1,
     assignedTo: 'nadine',
+    appealDeadline: '2026-07-06',
+    appealLabel: 'الاستئناف',
     nextHearing: { day: '٢٨', month: 'يونيو', full: '٢٨ يونيو ٢٠٢٦', dayOfWeek: 'السبت', time: '١٠:٠٠ صباحاً', timeShort: '١٠:٠٠ ص' },
     sessions: [
       { id: 's-ahmed-3', date: { day: '١٥', month: 'مارس', full: '١٥ مارس ٢٠٢٦' }, decision: 'قررت المحكمة التأجيل لإعلان الخصم وتحديد جلسة للمرافعة في الموضوع', nextHearing: { day: '٢٨', month: 'يونيو', full: '٢٨ يونيو ٢٠٢٦' } },
@@ -78,6 +80,8 @@ export const clients = [
     stage: 'مرحلة الإثبات',
     activeCases: 1,
     assignedTo: 'sara_a',
+    appealDeadline: '2026-07-09',
+    appealLabel: 'الطعن',
     nextHearing: { day: '٢', month: 'يوليو', full: '٢ يوليو ٢٠٢٦', dayOfWeek: 'الخميس', time: '١١:٣٠ صباحاً', timeShort: '١١:٣٠ ص' },
     sessions: [
       { id: 's-mona-2', date: { day: '١٠', month: 'مايو', full: '١٠ مايو ٢٠٢٦' }, decision: 'حجزت المحكمة الدعوى للتحقيق في وقائع التسجيل العقاري والمستندات المقدمة', nextHearing: { day: '٢', month: 'يوليو', full: '٢ يوليو ٢٠٢٦' } },
@@ -265,6 +269,8 @@ export const clients = [
     stage: 'حجز للحكم',
     activeCases: 1,
     assignedTo: 'nadine',
+    appealDeadline: '2026-07-12',
+    appealLabel: 'الاستئناف',
     nextHearing: { day: '٢٠', month: 'يوليو', full: '٢٠ يوليو ٢٠٢٦', dayOfWeek: 'الإثنين', time: '١١:٠٠ صباحاً', timeShort: '١١:٠٠ ص' },
     sessions: [
       { id: 's-rania-3', date: { day: '١', month: 'يونيو', full: '١ يونيو ٢٠٢٦' }, decision: 'حجزت المحكمة الدعوى للحكم في ضوء جميع المذكرات والمستندات المقدمة', nextHearing: { day: '٢٠', month: 'يوليو', full: '٢٠ يوليو ٢٠٢٦' } },

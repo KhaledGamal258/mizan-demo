@@ -288,6 +288,7 @@ export default function App() {
         onOpenCase={openCase}
         onOpenClients={() => setLawyerView('clients')}
         upcomingHearings={mergedUpcomingHearings}
+        allClients={mergedAllClients}
       />
     );
   }
