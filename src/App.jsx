@@ -89,6 +89,13 @@ export default function App() {
   const [sessionsMap, setSessionsMap] = useState({});
   const [hearingOverrides, setHearingOverrides] = useState({});
   const [assignmentOverrides, setAssignmentOverrides] = useState({});
+  const [archiveOverrides, setArchiveOverrides] = useState({});
+  const [toast, setToast] = useState(null);
+
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast((t) => (t === msg ? null : t)), 2500);
+  };
 
   const getMergedClient = (id) => {
     const base = getClientById(id);
@@ -97,6 +104,7 @@ export default function App() {
       ...base,
       nextHearing: hearingOverrides[id] || base.nextHearing,
       assignedTo: assignmentOverrides[id] || base.assignedTo,
+      archived: archiveOverrides[id] !== undefined ? archiveOverrides[id] : !!base.archived,
     };
   };
 
@@ -118,6 +126,17 @@ export default function App() {
 
   const handleReassign = (clientId, newAssigneeId) => {
     setAssignmentOverrides((prev) => ({ ...prev, [clientId]: newAssigneeId }));
+  };
+
+  const handleArchive = (clientId) => {
+    setArchiveOverrides((prev) => ({ ...prev, [clientId]: true }));
+    showToast('تم نقل القضية إلى الأرشيف');
+    setLawyerView('clients');
+  };
+
+  const handleRestore = (clientId) => {
+    setArchiveOverrides((prev) => ({ ...prev, [clientId]: false }));
+    showToast('تمت استعادة القضية إلى النشطين');
   };
 
   const mergedUpcomingHearings = upcomingHearingsDefault.map((h) => getMergedClient(h.id));
@@ -172,6 +191,8 @@ export default function App() {
         sessions={getMergedSessions(selectedClientId)}
         onAddSession={(session) => handleAddSession(selectedClientId, session)}
         onReassign={(newId) => handleReassign(selectedClientId, newId)}
+        onArchive={() => handleArchive(selectedClientId)}
+        onRestore={() => handleRestore(selectedClientId)}
       />
     );
   } else if (lawyerView === 'add') {
@@ -203,6 +224,29 @@ export default function App() {
       lawyerName={LAWYER_NAME}
     >
       {content}
+      {toast && (
+        <div
+          dir="rtl"
+          style={{
+            position: 'fixed',
+            bottom: 24,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: '#1C2D4F',
+            color: '#fff',
+            padding: '12px 22px',
+            borderRadius: 30,
+            fontSize: 13,
+            fontWeight: 700,
+            fontFamily: "'Almarai',sans-serif",
+            boxShadow: '0 10px 30px rgba(0,0,0,0.28)',
+            zIndex: 300,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {toast}
+        </div>
+      )}
     </LawyerLayout>
   );
 }

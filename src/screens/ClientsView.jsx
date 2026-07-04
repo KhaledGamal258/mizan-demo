@@ -21,21 +21,29 @@ function selectStyle() {
 }
 
 export default function ClientsView({ onOpenCase, allClients = clientsDefault }) {
+  const [tab, setTab] = useState('active');
   const [search, setSearch] = useState('');
   const [caseType, setCaseType] = useState('');
   const [court, setCourt] = useState('');
   const [governorate, setGovernorate] = useState('');
   const [copiedId, setCopiedId] = useState(null);
 
+  const tabClients = useMemo(
+    () => allClients.filter((c) => (tab === 'archived' ? c.archived : !c.archived)),
+    [allClients, tab]
+  );
+
   const filtered = useMemo(() => {
-    return allClients.filter((c) => {
+    return tabClients.filter((c) => {
       if (search.trim() && !c.name.includes(search.trim())) return false;
       if (caseType && c.caseType !== caseType) return false;
       if (court && c.court !== court) return false;
       if (governorate && c.governorate !== governorate) return false;
       return true;
     });
-  }, [allClients, search, caseType, court, governorate]);
+  }, [tabClients, search, caseType, court, governorate]);
+
+  const emptyMessage = tab === 'archived' ? 'لا توجد قضايا مؤرشفة مطابقة' : 'لا يوجد موكّلون مطابقون';
 
   const onCopyLink = async (id) => {
     const link = buildClientLink(id);
@@ -52,7 +60,35 @@ export default function ClientsView({ onOpenCase, allClients = clientsDefault })
     <div style={{ padding: '20px 16px 40px', display: 'flex', flexDirection: 'column', gap: 18 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
         <span style={{ color: '#1C2D4F', fontSize: 18, fontWeight: 800 }}>الموكّلون</span>
-        <span style={{ color: '#9BA3AF', fontSize: 12.5 }}>{filtered.length} من {allClients.length}</span>
+        <span style={{ color: '#9BA3AF', fontSize: 12.5 }}>{filtered.length} من {tabClients.length}</span>
+      </div>
+
+      {/* Active / Archive tabs */}
+      <div style={{ display: 'flex', background: '#fff', borderRadius: 20, padding: 3, width: 'fit-content', boxShadow: '0 2px 16px rgba(0,0,0,0.05)' }}>
+        {[
+          { key: 'active', label: 'النشطون' },
+          { key: 'archived', label: 'الأرشيف' },
+        ].map((opt) => (
+          <button
+            key={opt.key}
+            type="button"
+            onClick={() => setTab(opt.key)}
+            style={{
+              background: tab === opt.key ? '#1C2D4F' : 'transparent',
+              border: 'none',
+              borderRadius: 18,
+              padding: '7px 16px',
+              color: tab === opt.key ? '#C9A870' : '#9BA3AF',
+              fontSize: 12.5,
+              fontWeight: 700,
+              fontFamily: "'Almarai',sans-serif",
+              cursor: 'pointer',
+              transition: 'all 0.15s',
+            }}
+          >
+            {opt.label}
+          </button>
+        ))}
       </div>
 
       {/* Filters */}
@@ -137,7 +173,7 @@ export default function ClientsView({ onOpenCase, allClients = clientsDefault })
           </tbody>
         </table>
         {filtered.length === 0 && (
-          <div style={{ padding: '24px 16px', textAlign: 'center', color: '#9BA3AF', fontSize: 13 }}>لا يوجد موكّلون مطابقون</div>
+          <div style={{ padding: '24px 16px', textAlign: 'center', color: '#9BA3AF', fontSize: 13 }}>{emptyMessage}</div>
         )}
       </div>
 
@@ -179,7 +215,7 @@ export default function ClientsView({ onOpenCase, allClients = clientsDefault })
           </div>
         ))}
         {filtered.length === 0 && (
-          <div style={{ padding: '24px 16px', textAlign: 'center', color: '#9BA3AF', fontSize: 13, background: '#fff', borderRadius: 14 }}>لا يوجد موكّلون مطابقون</div>
+          <div style={{ padding: '24px 16px', textAlign: 'center', color: '#9BA3AF', fontSize: 13, background: '#fff', borderRadius: 14 }}>{emptyMessage}</div>
         )}
       </div>
     </div>

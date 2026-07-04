@@ -74,7 +74,8 @@ function NotVisiblePill({ compact }) {
   );
 }
 
-export default function CasePage({ client, lawyerName, onBack, sessions = [], onAddSession, onReassign }) {
+export default function CasePage({ client, lawyerName, onBack, sessions = [], onAddSession, onReassign, onArchive, onRestore }) {
+  const archived = !!client.archived;
   const [docs, setDocs] = useState(initialDocs);
   const [updates, setUpdates] = useState(initialUpdates);
   const [messages, setMessages] = useState(initialMessages);
@@ -85,13 +86,23 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
   const [formDate, setFormDate] = useState('');
   const [formDecision, setFormDecision] = useState('');
   const [formNextDate, setFormNextDate] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [confirmArchiveOpen, setConfirmArchiveOpen] = useState(false);
 
   const toggleDoc = (idx) => {
+    if (archived) return;
     setDocs(docs.map((d, i) => (i === idx ? { ...d, visible: !d.visible } : d)));
   };
 
   const toggleUpdate = (idx) => {
+    if (archived) return;
     setUpdates(updates.map((u, i) => (i === idx ? { ...u, visible: !u.visible } : u)));
+  };
+
+  const confirmArchive = () => {
+    setConfirmArchiveOpen(false);
+    setMenuOpen(false);
+    if (onArchive) onArchive();
   };
 
   const onSendReply = () => {
@@ -156,14 +167,90 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
           <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 10.5, marginBottom: 2 }}>ملف القضية</div>
           <div style={{ color: '#fff', fontSize: 15, fontWeight: 800, lineHeight: 1.2 }}>{client.caseTitle}</div>
         </div>
-        <div style={{ width: 34, height: 34, borderRadius: 17, background: 'rgba(255,255,255,0.09)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, cursor: 'pointer' }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="5" r="1.5" fill="rgba(255,255,255,0.7)" />
-            <circle cx="12" cy="12" r="1.5" fill="rgba(255,255,255,0.7)" />
-            <circle cx="12" cy="19" r="1.5" fill="rgba(255,255,255,0.7)" />
-          </svg>
-        </div>
+        {!archived ? (
+          <div style={{ position: 'relative', flexShrink: 0 }}>
+            <button
+              type="button"
+              onClick={() => setMenuOpen((o) => !o)}
+              aria-label="خيارات القضية"
+              style={{ width: 34, height: 34, borderRadius: 17, background: 'rgba(255,255,255,0.09)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="5" r="1.5" fill="rgba(255,255,255,0.7)" />
+                <circle cx="12" cy="12" r="1.5" fill="rgba(255,255,255,0.7)" />
+                <circle cx="12" cy="19" r="1.5" fill="rgba(255,255,255,0.7)" />
+              </svg>
+            </button>
+            {menuOpen && (
+              <div style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, background: '#fff', borderRadius: 10, boxShadow: '0 8px 28px rgba(0,0,0,0.18)', padding: '6px 0', minWidth: 170, zIndex: 60 }}>
+                <button
+                  type="button"
+                  onClick={() => { setMenuOpen(false); setConfirmArchiveOpen(true); }}
+                  style={{ display: 'block', width: '100%', padding: '10px 14px', background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: "'Almarai',sans-serif", textAlign: 'right', color: '#1C2D4F', fontSize: 13, fontWeight: 700 }}
+                >
+                  أرشفة القضية
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div style={{ width: 34, flexShrink: 0 }} />
+        )}
       </div>
+
+      {archived && (
+        <div dir="rtl" style={{ background: 'rgba(156,163,175,0.14)', borderBottom: '1px solid rgba(156,163,175,0.28)', padding: '11px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="7" width="18" height="13" rx="2" stroke="#6B7280" strokeWidth="1.8" />
+              <path d="M3 7l2-4h14l2 4" stroke="#6B7280" strokeWidth="1.8" strokeLinejoin="round" />
+              <path d="M10 12h4" stroke="#6B7280" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+            <span style={{ color: '#6B7280', fontSize: 12.5, fontWeight: 700 }}>هذه القضية مؤرشفة — للعرض فقط</span>
+          </div>
+          <button
+            type="button"
+            onClick={onRestore}
+            style={{ background: '#1C2D4F', color: '#C9A870', border: 'none', borderRadius: 20, padding: '6px 16px', fontSize: 12.5, fontWeight: 700, fontFamily: "'Almarai',sans-serif", cursor: 'pointer' }}
+          >
+            استعادة
+          </button>
+        </div>
+      )}
+
+      {confirmArchiveOpen && (
+        <div
+          onClick={() => setConfirmArchiveOpen(false)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(28,45,79,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: 20 }}
+        >
+          <div
+            dir="rtl"
+            onClick={(e) => e.stopPropagation()}
+            style={{ background: '#fff', borderRadius: 16, padding: '22px 22px', maxWidth: 360, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}
+          >
+            <div style={{ color: '#1C2D4F', fontSize: 16, fontWeight: 800, marginBottom: 10 }}>أرشفة القضية</div>
+            <div style={{ color: '#5D6579', fontSize: 13, lineHeight: 1.7, marginBottom: 20 }}>
+              سيتم نقل هذه القضية إلى الأرشيف. يمكنك استعادتها لاحقاً من قسم الأرشيف في أي وقت.
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                type="button"
+                onClick={confirmArchive}
+                style={{ flex: 1, background: '#1C2D4F', color: '#C9A870', border: 'none', borderRadius: 20, padding: '10px 16px', fontSize: 13, fontWeight: 700, fontFamily: "'Almarai',sans-serif", cursor: 'pointer' }}
+              >
+                تأكيد الأرشفة
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmArchiveOpen(false)}
+                style={{ flex: 1, background: 'transparent', border: '1.5px solid #E8E4DC', borderRadius: 20, padding: '10px 16px', fontSize: 13, fontWeight: 700, fontFamily: "'Almarai',sans-serif", color: '#9BA3AF', cursor: 'pointer' }}
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div style={{ padding: '20px 16px 0', maxWidth: 1100, marginInline: 'auto', display: 'flex', flexDirection: 'column', gap: 22 }}>
         {/* CASE HEADER CARD */}
@@ -188,16 +275,18 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
             <div style={{ position: 'relative', display: 'inline-block', marginBottom: 14 }}>
               <button
                 type="button"
-                onClick={() => setReassignOpen((o) => !o)}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(255,255,255,0.09)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 20, padding: '5px 12px 5px 10px', cursor: 'pointer', fontFamily: "'Almarai',sans-serif" }}
+                onClick={() => !archived && setReassignOpen((o) => !o)}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(255,255,255,0.09)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 20, padding: '5px 12px 5px 10px', cursor: archived ? 'default' : 'pointer', fontFamily: "'Almarai',sans-serif" }}
               >
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: getTeamMemberById(client.assignedTo)?.avatarColor || '#C9A870', flexShrink: 0 }} />
                 <span style={{ color: 'rgba(255,255,255,0.78)', fontSize: 12, fontWeight: 700 }}>المسند إليه: {getTeamMemberById(client.assignedTo)?.name || '—'}</span>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" style={{ marginRight: 2 }}>
-                  <path d="M6 9l6 6 6-6" stroke="rgba(255,255,255,0.45)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                {!archived && (
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" style={{ marginRight: 2 }}>
+                    <path d="M6 9l6 6 6-6" stroke="rgba(255,255,255,0.45)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
               </button>
-              {reassignOpen && (
+              {!archived && reassignOpen && (
                 <div style={{ position: 'absolute', top: 'calc(100% + 6px)', right: 0, background: '#fff', borderRadius: 10, boxShadow: '0 8px 28px rgba(0,0,0,0.18)', padding: '6px 0', minWidth: 210, zIndex: 50 }}>
                   {team.map((member) => (
                     <button
@@ -250,19 +339,21 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
           <div style={{ padding: '15px 15px 0' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 15 }}>
               <span style={{ color: '#1C2D4F', fontSize: 16, fontWeight: 800 }}>سجل الجلسات</span>
-              <button
-                type="button"
-                onClick={() => setShowAddForm((f) => !f)}
-                style={{ display: 'flex', alignItems: 'center', gap: 6, background: showAddForm ? 'rgba(28,45,79,0.12)' : 'rgba(28,45,79,0.07)', border: 'none', borderRadius: 20, padding: '6px 13px', cursor: 'pointer' }}
-              >
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 5v14M5 12h14" stroke="#1C2D4F" strokeWidth="2.4" strokeLinecap="round" />
-                </svg>
-                <span style={{ color: '#1C2D4F', fontSize: 12, fontWeight: 700, opacity: 0.7, fontFamily: "'Almarai',sans-serif" }}>إضافة جلسة</span>
-              </button>
+              {!archived && (
+                <button
+                  type="button"
+                  onClick={() => setShowAddForm((f) => !f)}
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, background: showAddForm ? 'rgba(28,45,79,0.12)' : 'rgba(28,45,79,0.07)', border: 'none', borderRadius: 20, padding: '6px 13px', cursor: 'pointer' }}
+                >
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 5v14M5 12h14" stroke="#1C2D4F" strokeWidth="2.4" strokeLinecap="round" />
+                  </svg>
+                  <span style={{ color: '#1C2D4F', fontSize: 12, fontWeight: 700, opacity: 0.7, fontFamily: "'Almarai',sans-serif" }}>إضافة جلسة</span>
+                </button>
+              )}
             </div>
 
-            {showAddForm && (
+            {!archived && showAddForm && (
               <div style={{ background: '#F6F4F0', borderRadius: 10, padding: '14px', marginBottom: 16, border: '1px solid #E8E4DC' }}>
                 <div style={{ color: '#1C2D4F', fontSize: 13, fontWeight: 700, marginBottom: 12 }}>تسجيل جلسة جديدة</div>
                 <div style={{ display: 'flex', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
@@ -365,12 +456,14 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 13, padding: '0 2px' }}>
               <span style={{ color: '#1C2D4F', fontSize: 16, fontWeight: 800 }}>المستندات</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(28,45,79,0.07)', borderRadius: 20, padding: '6px 13px', cursor: 'pointer' }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 5v14M5 12h14" stroke="#1C2D4F" strokeWidth="2.2" strokeLinecap="round" />
-                </svg>
-                <span style={{ color: '#1C2D4F', fontSize: 12, fontWeight: 700, opacity: 0.65 }}>رفع مستند</span>
-              </div>
+              {!archived && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(28,45,79,0.07)', borderRadius: 20, padding: '6px 13px', cursor: 'pointer' }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 5v14M5 12h14" stroke="#1C2D4F" strokeWidth="2.2" strokeLinecap="round" />
+                  </svg>
+                  <span style={{ color: '#1C2D4F', fontSize: 12, fontWeight: 700, opacity: 0.65 }}>رفع مستند</span>
+                </div>
+              )}
             </div>
 
             <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 2px 16px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
@@ -384,11 +477,11 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
                       <div style={{ color: '#1C2D4F', fontSize: 13.5, fontWeight: 700, marginBottom: 3 }}>{item.name}</div>
                       <div style={{ color: '#9BA3AF', fontSize: 11.5, marginBottom: 10 }}>{item.date} · {item.size}</div>
                       <div
-                        role="button"
-                        tabIndex={0}
+                        role={archived ? undefined : 'button'}
+                        tabIndex={archived ? undefined : 0}
                         onClick={() => toggleDoc(idx)}
                         onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && toggleDoc(idx)}
-                        style={{ display: 'inline-flex', cursor: 'pointer' }}
+                        style={{ display: 'inline-flex', cursor: archived ? 'default' : 'pointer' }}
                       >
                         {item.visible ? <VisiblePill /> : <NotVisiblePill />}
                       </div>
@@ -417,11 +510,11 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
                       <div style={{ color: '#1C2D4F', fontSize: 13.5, fontWeight: 700, lineHeight: 1.4, flex: 1 }}>{item.title}</div>
                       <div
-                        role="button"
-                        tabIndex={0}
+                        role={archived ? undefined : 'button'}
+                        tabIndex={archived ? undefined : 0}
                         onClick={() => toggleUpdate(idx)}
                         onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && toggleUpdate(idx)}
-                        style={{ display: 'inline-flex', cursor: 'pointer', flexShrink: 0, marginTop: 2 }}
+                        style={{ display: 'inline-flex', cursor: archived ? 'default' : 'pointer', flexShrink: 0, marginTop: 2 }}
                       >
                         {item.visible ? <VisiblePill compact /> : <NotVisiblePill compact />}
                       </div>
@@ -468,26 +561,32 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
             </div>
 
             <div style={{ borderTop: '1px solid #F0ECE5' }} />
-            <div style={{ padding: '11px 14px', display: 'flex', alignItems: 'flex-end', gap: 10 }}>
-              <textarea
-                value={replyText}
-                onChange={(e) => setReplyText(e.target.value)}
-                placeholder="اكتب ردك على الموكّل..."
-                rows={2}
-                aria-label="ردك على الموكّل"
-                style={{ flex: 1, background: '#F6F4F0', border: 'none', borderRadius: 10, padding: '9px 12px', fontFamily: "'Almarai',sans-serif", fontSize: 13, color: '#1C2D4F', resize: 'none', outline: 'none', lineHeight: 1.55 }}
-              />
-              <button
-                type="button"
-                onClick={onSendReply}
-                aria-label="إرسال الرد"
-                style={{ width: 36, height: 36, borderRadius: 18, background: '#1C2D4F', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, marginBottom: 1 }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                  <path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" stroke="#C9A870" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
-            </div>
+            {archived ? (
+              <div style={{ padding: '13px 15px', textAlign: 'center', color: '#B2B8C2', fontSize: 12.5 }}>
+                القضية مؤرشفة — لا يمكن إرسال رسائل جديدة
+              </div>
+            ) : (
+              <div style={{ padding: '11px 14px', display: 'flex', alignItems: 'flex-end', gap: 10 }}>
+                <textarea
+                  value={replyText}
+                  onChange={(e) => setReplyText(e.target.value)}
+                  placeholder="اكتب ردك على الموكّل..."
+                  rows={2}
+                  aria-label="ردك على الموكّل"
+                  style={{ flex: 1, background: '#F6F4F0', border: 'none', borderRadius: 10, padding: '9px 12px', fontFamily: "'Almarai',sans-serif", fontSize: 13, color: '#1C2D4F', resize: 'none', outline: 'none', lineHeight: 1.55 }}
+                />
+                <button
+                  type="button"
+                  onClick={onSendReply}
+                  aria-label="إرسال الرد"
+                  style={{ width: 36, height: 36, borderRadius: 18, background: '#1C2D4F', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, marginBottom: 1 }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                    <path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" stroke="#C9A870" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
