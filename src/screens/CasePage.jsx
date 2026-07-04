@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { team, getTeamMemberById } from '../data/clients';
 import { buildDateObj } from '../utils/arabicDate';
+import { openMockDocument } from '../utils/mockPdf';
 
 const initialDocs = [
   { name: 'عقد العمل الأصلي', date: '١٥ مايو ٢٠٢٦', size: '2.4 MB', visible: true },
@@ -544,14 +545,28 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ color: '#1C2D4F', fontSize: 13.5, fontWeight: 700, marginBottom: 3 }}>{item.name}</div>
                       <div style={{ color: '#9BA3AF', fontSize: 11.5, marginBottom: 10 }}>{item.date} · {item.size}</div>
-                      <div
-                        role={archived ? undefined : 'button'}
-                        tabIndex={archived ? undefined : 0}
-                        onClick={() => toggleDoc(idx)}
-                        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && toggleDoc(idx)}
-                        style={{ display: 'inline-flex', cursor: archived ? 'default' : 'pointer' }}
-                      >
-                        {item.visible ? <VisiblePill /> : <NotVisiblePill />}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                        <div
+                          role={archived ? undefined : 'button'}
+                          tabIndex={archived ? undefined : 0}
+                          onClick={() => toggleDoc(idx)}
+                          onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && toggleDoc(idx)}
+                          style={{ display: 'inline-flex', cursor: archived ? 'default' : 'pointer' }}
+                        >
+                          {item.visible ? <VisiblePill /> : <NotVisiblePill />}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => openMockDocument(item.name, item.date)}
+                          aria-label={`فتح ${item.name}`}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(28,45,79,0.07)', border: 'none', borderRadius: 20, padding: '5px 11px', cursor: 'pointer' }}
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="#1C2D4F" strokeWidth="1.8" strokeLinejoin="round" />
+                            <circle cx="12" cy="12" r="3" stroke="#1C2D4F" strokeWidth="1.8" />
+                          </svg>
+                          <span style={{ color: '#1C2D4F', fontSize: 11, fontWeight: 700 }}>فتح</span>
+                        </button>
                       </div>
                     </div>
                   </div>
