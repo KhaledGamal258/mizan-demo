@@ -2,23 +2,24 @@ import { useState } from 'react';
 import { team, getTeamMemberById, CASE_STATUS_OPTIONS } from '../data/clients';
 import { buildDateObj } from '../utils/arabicDate';
 import { openMockDocument } from '../utils/mockPdf';
+import { generateId } from '../utils/id';
 
 const initialDocs = [
-  { name: 'عقد العمل الأصلي', date: '١٥ مايو ٢٠٢٦', size: '2.4 MB', visible: true },
-  { name: 'قرار الفصل التعسفي', date: '٢ مارس ٢٠٢٦', size: '1.1 MB', visible: false },
-  { name: 'محضر الجلسة السابقة', date: '١٨ أبريل ٢٠٢٦', size: '0.8 MB', visible: true },
+  { id: 'doc-1', name: 'عقد العمل الأصلي', date: '١٥ مايو ٢٠٢٦', size: '2.4 MB', visible: true },
+  { id: 'doc-2', name: 'قرار الفصل التعسفي', date: '٢ مارس ٢٠٢٦', size: '1.1 MB', visible: false },
+  { id: 'doc-3', name: 'محضر الجلسة السابقة', date: '١٨ أبريل ٢٠٢٦', size: '0.8 MB', visible: true },
 ];
 
 const initialUpdates = [
-  { title: 'تم تقديم مذكرة الدفاع', desc: 'رُفعت مذكرة الدفاع رسمياً إلى محكمة استئناف القاهرة', date: '١٢ يونيو ٢٠٢٦', dotColor: '#1C2D4F', visible: true },
-  { title: 'تحديد موعد الجلسة القادمة', desc: 'الجلسة في ٢٨ يونيو ٢٠٢٦ الساعة العاشرة صباحاً', date: '٥ يونيو ٢٠٢٦', dotColor: '#C9A870', visible: true },
-  { title: 'ملاحظات استراتيجية (سرية)', desc: 'نقاط ضعف في حجج الطرف الآخر — للاطلاع الداخلي فقط', date: '٢٠ مايو ٢٠٢٦', dotColor: '#B2B8C2', visible: false },
+  { id: 'update-1', title: 'تم تقديم مذكرة الدفاع', desc: 'رُفعت مذكرة الدفاع رسمياً إلى محكمة استئناف القاهرة', date: '١٢ يونيو ٢٠٢٦', dotColor: '#1C2D4F', visible: true },
+  { id: 'update-2', title: 'تحديد موعد الجلسة القادمة', desc: 'الجلسة في ٢٨ يونيو ٢٠٢٦ الساعة العاشرة صباحاً', date: '٥ يونيو ٢٠٢٦', dotColor: '#C9A870', visible: true },
+  { id: 'update-3', title: 'ملاحظات استراتيجية (سرية)', desc: 'نقاط ضعف في حجج الطرف الآخر — للاطلاع الداخلي فقط', date: '٢٠ مايو ٢٠٢٦', dotColor: '#B2B8C2', visible: false },
 ];
 
 const initialMessages = [
-  { from: 'client', text: 'صباح الخير أستاذة نادين، هل تم تقديم المذكرة بالفعل؟ أنا قلقان قليلاً', time: '٩:١٥ ص · ١٢ يونيو' },
-  { from: 'lawyer', text: 'صباح النور، نعم تم تقديم المذكرة اليوم بنجاح، كل شيء على ما يرام', time: '١٠:٣٢ ص · ١٢ يونيو' },
-  { from: 'client', text: 'شكراً جزيلاً، هل هناك أي مستندات أحتاج لتوقيعها قبل الجلسة؟', time: '٢:٠٠ م · ١٤ يونيو' },
+  { id: 'msg-1', from: 'client', text: 'صباح الخير أستاذة نادين، هل تم تقديم المذكرة بالفعل؟ أنا قلقان قليلاً', time: '٩:١٥ ص · ١٢ يونيو' },
+  { id: 'msg-2', from: 'lawyer', text: 'صباح النور، نعم تم تقديم المذكرة اليوم بنجاح، كل شيء على ما يرام', time: '١٠:٣٢ ص · ١٢ يونيو' },
+  { id: 'msg-3', from: 'client', text: 'شكراً جزيلاً، هل هناك أي مستندات أحتاج لتوقيعها قبل الجلسة؟', time: '٢:٠٠ م · ١٤ يونيو' },
 ];
 
 function FileIcon() {
@@ -68,7 +69,9 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
   const [updates, setUpdates] = useState(initialUpdates);
   const [messages, setMessages] = useState(initialMessages);
   const [replyText, setReplyText] = useState('');
-  const [teamMessages, setTeamMessages] = useState(client.teamDiscussion || []);
+  const [teamMessages, setTeamMessages] = useState(() =>
+    (client.teamDiscussion || []).map((m) => (m.id ? m : { ...m, id: generateId('team-msg') }))
+  );
   const [teamReplyText, setTeamReplyText] = useState('');
 
   const [reassignOpen, setReassignOpen] = useState(false);
@@ -108,14 +111,14 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
   const onSendReply = () => {
     const text = replyText.trim();
     if (!text) return;
-    setMessages([...messages, { from: 'lawyer', text, time: 'الآن' }]);
+    setMessages([...messages, { id: generateId('msg'), from: 'lawyer', text, time: 'الآن' }]);
     setReplyText('');
   };
 
   const onSendTeamReply = () => {
     const text = teamReplyText.trim();
     if (!text) return;
-    setTeamMessages([...teamMessages, { from: 'nadine', text, time: 'الآن' }]);
+    setTeamMessages([...teamMessages, { id: generateId('team-msg'), from: 'nadine', text, time: 'الآن' }]);
     setTeamReplyText('');
   };
 
@@ -124,7 +127,7 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
     const dateObj = formDate ? buildDateObj(formDate) : { day: '', month: '', full: 'تاريخ غير محدد' };
     const nextHearingObj = formNextDate ? buildDateObj(formNextDate) : null;
     const newSession = {
-      id: `s-dynamic-${Date.now()}`,
+      id: generateId('session'),
       date: dateObj,
       decision: formDecision.trim(),
       nextHearing: nextHearingObj,
@@ -414,10 +417,10 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
                   لا توجد رسائل بعد في نقاش الفريق
                 </div>
               ) : (
-                teamMessages.map((msg, idx) => {
+                teamMessages.map((msg) => {
                   const member = getTeamMemberById(msg.from);
                   return (
-                    <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: 11 }}>
+                    <div key={msg.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 11 }}>
                       <div style={{ width: 32, height: 32, borderRadius: 9, background: member?.avatarBg || '#F0ECE5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 13, fontWeight: 800, color: member?.avatarColor || '#9BA3AF' }}>
                         {member?.initial || '?'}
                       </div>
@@ -601,7 +604,7 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
 
             <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 2px 16px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
               {docs.map((item, idx) => (
-                <div key={item.name}>
+                <div key={item.id}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 13, padding: '13px 15px' }}>
                     <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(28,45,79,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <FileIcon />
@@ -648,7 +651,7 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
 
             <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 2px 16px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
               {updates.map((item, idx) => (
-                <div key={item.title} style={{ display: 'flex', alignItems: 'flex-start', gap: 13, padding: '16px 15px' }}>
+                <div key={item.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 13, padding: '16px 15px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 18, flexShrink: 0 }}>
                     <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.dotColor, marginTop: 5, flexShrink: 0 }} />
                     {idx < updates.length - 1 && <div style={{ flex: 1, width: 1.5, background: '#ECE8E0', marginTop: 7, minHeight: 44 }} />}
@@ -683,10 +686,10 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
 
           <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 2px 16px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
             <div style={{ padding: '16px 15px 12px', display: 'flex', flexDirection: 'column', gap: 13 }}>
-              {messages.map((msg, idx) => {
+              {messages.map((msg) => {
                 const senderLabel = msg.from === 'client' ? client.name : lawyerName;
                 return msg.from === 'client' ? (
-                  <div key={idx} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <div key={msg.id} style={{ display: 'flex', justifyContent: 'flex-end' }}>
                     <div style={{ maxWidth: '80%' }}>
                       <div style={{ background: '#F3F1ED', borderRadius: '14px 14px 14px 4px', padding: '10px 13px' }}>
                         <div style={{ color: '#1C2D4F', fontSize: 12.5, lineHeight: 1.65 }}>{msg.text}</div>
@@ -695,7 +698,7 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
                     </div>
                   </div>
                 ) : (
-                  <div key={idx} style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                  <div key={msg.id} style={{ display: 'flex', justifyContent: 'flex-start' }}>
                     <div style={{ maxWidth: '80%' }}>
                       <div style={{ background: '#1C2D4F', borderRadius: '14px 14px 4px 14px', padding: '10px 13px' }}>
                         <div style={{ color: '#fff', fontSize: 12.5, lineHeight: 1.65 }}>{msg.text}</div>
