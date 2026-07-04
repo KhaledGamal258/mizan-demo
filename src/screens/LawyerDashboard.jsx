@@ -1,6 +1,15 @@
-import { upcomingHearings as upcomingHearingsDefault } from '../data/clients';
+import { useState } from 'react';
+import { upcomingHearings as upcomingHearingsDefault, getTeamMemberById } from '../data/clients';
+
+const OWNER_ID = 'nadine';
 
 export default function LawyerDashboard({ lawyerName, onOpenCase, onOpenClients, upcomingHearings = upcomingHearingsDefault }) {
+  const [filter, setFilter] = useState('all'); // 'all' | 'mine'
+
+  const displayedHearings = filter === 'mine'
+    ? upcomingHearings.filter((h) => h.assignedTo === OWNER_ID)
+    : upcomingHearings;
+
   return (
     <div dir="rtl" style={{ fontFamily: "'Almarai',sans-serif", padding: '20px 16px 40px', display: 'flex', flexDirection: 'column', gap: 22 }}>
       {/* Greeting + stats hero card */}
@@ -47,37 +56,77 @@ export default function LawyerDashboard({ lawyerName, onOpenCase, onOpenClients,
       <div style={{ background: '#1C2D4F', borderRadius: 18, overflow: 'hidden', boxShadow: '0 10px 32px rgba(28,45,79,0.24)' }}>
         <div style={{ height: 2.5, background: 'linear-gradient(to left, transparent 0%, #C9A870 20%, #C9A870 80%, transparent 100%)' }} />
         <div style={{ padding: '18px 20px 6px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
             <div>
               <div style={{ color: '#C9A870', fontSize: 11, fontWeight: 700, letterSpacing: 0.8, marginBottom: 3 }}>هذا الأسبوع</div>
               <div style={{ color: '#fff', fontSize: 18, fontWeight: 800 }}>الجلسات القادمة</div>
             </div>
             <div style={{ background: 'rgba(201,168,112,0.12)', border: '1px solid rgba(201,168,112,0.22)', borderRadius: 20, padding: '4px 13px' }}>
-              <span style={{ color: '#C9A870', fontSize: 12, fontWeight: 700 }}>{upcomingHearings.length} جلسات</span>
+              <span style={{ color: '#C9A870', fontSize: 12, fontWeight: 700 }}>{displayedHearings.length} جلسات</span>
             </div>
           </div>
 
-          {upcomingHearings.map((h, idx) => (
-            <div
-              key={h.id}
-              role="button"
-              tabIndex={0}
-              onClick={() => onOpenCase(h.id)}
-              onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onOpenCase(h.id)}
-              style={{ display: 'flex', alignItems: 'flex-start', marginBottom: idx < upcomingHearings.length - 1 ? 15 : 0, paddingBottom: idx < upcomingHearings.length - 1 ? 15 : 20, borderBottom: idx < upcomingHearings.length - 1 ? '1px solid rgba(255,255,255,0.07)' : 'none', cursor: 'pointer' }}
-            >
-              <div style={{ width: 42, flexShrink: 0, textAlign: 'center' }}>
-                <div style={{ color: '#C9A870', fontSize: 24, fontWeight: 800, lineHeight: 1 }}>{h.nextHearing.day}</div>
-                <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 9.5, marginTop: 2 }}>{h.nextHearing.month}</div>
-              </div>
-              <div style={{ width: 1, background: 'rgba(201,168,112,0.25)', alignSelf: 'stretch', margin: '0 14px', flexShrink: 0 }} />
-              <div style={{ flex: 1 }}>
-                <div style={{ color: '#fff', fontSize: 13.5, fontWeight: 700, marginBottom: 3, lineHeight: 1.3 }}>{h.caseTitle}</div>
-                <div style={{ color: 'rgba(255,255,255,0.42)', fontSize: 11, marginBottom: 2 }}>{h.name}</div>
-                <div style={{ color: 'rgba(255,255,255,0.24)', fontSize: 10.5 }}>{h.courtShort} · {h.nextHearing.timeShort}</div>
-              </div>
+          {/* Segmented toggle */}
+          <div style={{ display: 'flex', background: 'rgba(255,255,255,0.07)', borderRadius: 22, padding: 3, marginBottom: 18, width: 'fit-content' }}>
+            {[{ key: 'all', label: 'كل القضايا' }, { key: 'mine', label: 'قضاياي' }].map((opt) => (
+              <button
+                key={opt.key}
+                type="button"
+                onClick={() => setFilter(opt.key)}
+                style={{
+                  background: filter === opt.key ? 'rgba(201,168,112,0.2)' : 'transparent',
+                  border: filter === opt.key ? '1px solid rgba(201,168,112,0.35)' : '1px solid transparent',
+                  borderRadius: 19,
+                  padding: '5px 14px',
+                  color: filter === opt.key ? '#C9A870' : 'rgba(255,255,255,0.45)',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  fontFamily: "'Almarai',sans-serif",
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+
+          {displayedHearings.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '20px 16px', color: 'rgba(255,255,255,0.3)', fontSize: 13, paddingBottom: 26 }}>
+              لا توجد جلسات مسجلة باسمك هذا الأسبوع
             </div>
-          ))}
+          ) : (
+            displayedHearings.map((h, idx) => {
+              const assignee = getTeamMemberById(h.assignedTo);
+              return (
+                <div
+                  key={h.id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => onOpenCase(h.id)}
+                  onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onOpenCase(h.id)}
+                  style={{ display: 'flex', alignItems: 'flex-start', marginBottom: idx < displayedHearings.length - 1 ? 15 : 0, paddingBottom: idx < displayedHearings.length - 1 ? 15 : 20, borderBottom: idx < displayedHearings.length - 1 ? '1px solid rgba(255,255,255,0.07)' : 'none', cursor: 'pointer' }}
+                >
+                  <div style={{ width: 42, flexShrink: 0, textAlign: 'center' }}>
+                    <div style={{ color: '#C9A870', fontSize: 24, fontWeight: 800, lineHeight: 1 }}>{h.nextHearing.day}</div>
+                    <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 9.5, marginTop: 2 }}>{h.nextHearing.month}</div>
+                  </div>
+                  <div style={{ width: 1, background: 'rgba(201,168,112,0.25)', alignSelf: 'stretch', margin: '0 14px', flexShrink: 0 }} />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ color: '#fff', fontSize: 13.5, fontWeight: 700, marginBottom: 3, lineHeight: 1.3 }}>{h.caseTitle}</div>
+                    <div style={{ color: 'rgba(255,255,255,0.42)', fontSize: 11, marginBottom: 2 }}>{h.name}</div>
+                    <div style={{ color: 'rgba(255,255,255,0.24)', fontSize: 10.5, marginBottom: assignee ? 7 : 0 }}>{h.courtShort} · {h.nextHearing.timeShort}</div>
+                    {assignee && (
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                        <div style={{ width: 7, height: 7, borderRadius: '50%', background: assignee.avatarColor }} />
+                        <span style={{ color: 'rgba(255,255,255,0.38)', fontSize: 10.5, fontWeight: 700 }}>{assignee.name}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
 

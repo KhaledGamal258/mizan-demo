@@ -1,4 +1,15 @@
 // Mock data only — demo, no real clients/cases.
+
+export const team = [
+  { id: 'nadine', name: 'أ. نادين سامي', initial: 'ن', role: 'صاحب المكتب', avatarBg: '#1C2D4F', avatarColor: '#C9A870' },
+  { id: 'karim_j', name: 'أ. كريم الجندي', initial: 'ك', role: 'محامي', avatarBg: 'rgba(59,130,246,0.1)', avatarColor: '#3B82F6' },
+  { id: 'sara_a', name: 'أ. سارة عبد الله', initial: 'س', role: 'محامي', avatarBg: 'rgba(20,184,166,0.1)', avatarColor: '#14B8A6' },
+];
+
+export function getTeamMemberById(id) {
+  return team.find((m) => m.id === id);
+}
+
 export const clients = [
   {
     id: 'ahmed',
@@ -20,6 +31,7 @@ export const clients = [
     filedDate: '٥ مارس ٢٠٢٤',
     stage: 'مذكرة الدفاع',
     activeCases: 1,
+    assignedTo: 'nadine',
     nextHearing: { day: '٢٨', month: 'يونيو', full: '٢٨ يونيو ٢٠٢٦', dayOfWeek: 'السبت', time: '١٠:٠٠ صباحاً', timeShort: '١٠:٠٠ ص' },
     sessions: [
       { id: 's-ahmed-3', date: { day: '١٥', month: 'مارس', full: '١٥ مارس ٢٠٢٦' }, decision: 'قررت المحكمة التأجيل لإعلان الخصم وتحديد جلسة للمرافعة في الموضوع', nextHearing: { day: '٢٨', month: 'يونيو', full: '٢٨ يونيو ٢٠٢٦' } },
@@ -47,6 +59,7 @@ export const clients = [
     filedDate: '١٢ يناير ٢٠٢٤',
     stage: 'مرحلة الإثبات',
     activeCases: 1,
+    assignedTo: 'sara_a',
     nextHearing: { day: '٢', month: 'يوليو', full: '٢ يوليو ٢٠٢٦', dayOfWeek: 'الخميس', time: '١١:٣٠ صباحاً', timeShort: '١١:٣٠ ص' },
     sessions: [
       { id: 's-mona-2', date: { day: '١٠', month: 'مايو', full: '١٠ مايو ٢٠٢٦' }, decision: 'حجزت المحكمة الدعوى للتحقيق في وقائع التسجيل العقاري والمستندات المقدمة', nextHearing: { day: '٢', month: 'يوليو', full: '٢ يوليو ٢٠٢٦' } },
@@ -73,6 +86,7 @@ export const clients = [
     filedDate: '٢٠ سبتمبر ٢٠٢٣',
     stage: 'حجز للحكم',
     activeCases: 1,
+    assignedTo: 'nadine',
     nextHearing: { day: '١٥', month: 'يوليو', full: '١٥ يوليو ٢٠٢٦', dayOfWeek: 'الأربعاء', time: '٩:٠٠ صباحاً', timeShort: '٩:٠٠ ص' },
     sessions: [
       { id: 's-karim-3', date: { day: '٨', month: 'يونيو', full: '٨ يونيو ٢٠٢٦' }, decision: 'حجزت الدعوى للحكم لجلسة ١٥ يوليو ٢٠٢٦ بعد انتهاء المرافعات', nextHearing: { day: '١٥', month: 'يوليو', full: '١٥ يوليو ٢٠٢٦' } },
@@ -100,6 +114,7 @@ export const clients = [
     filedDate: '٣ فبراير ٢٠٢٤',
     stage: 'إحالة للخبير',
     activeCases: 1,
+    assignedTo: 'karim_j',
     nextHearing: { day: '٥', month: 'يوليو', full: '٥ يوليو ٢٠٢٦', dayOfWeek: 'الأحد', time: '٩:٠٠ صباحاً', timeShort: '٩:٠٠ ص' },
     sessions: [
       { id: 's-sara-2', date: { day: '١٥', month: 'مايو', full: '١٥ مايو ٢٠٢٦' }, decision: 'تقررت إحالة الدعوى لهيئة مكتب خبراء وزارة العدل لتقييم قيمة التركة', nextHearing: { day: '٥', month: 'يوليو', full: '٥ يوليو ٢٠٢٦' } },
@@ -126,6 +141,7 @@ export const clients = [
     filedDate: '١٠ أبريل ٢٠٢٤',
     stage: 'تبادل المذكرات',
     activeCases: 1,
+    assignedTo: 'nadine',
     nextHearing: { day: '٨', month: 'يوليو', full: '٨ يوليو ٢٠٢٦', dayOfWeek: 'الأربعاء', time: '١٢:٠٠ ظهراً', timeShort: '١٢:٠٠ ظ' },
     sessions: [
       { id: 's-mahmoud-2', date: { day: '١٢', month: 'يونيو', full: '١٢ يونيو ٢٠٢٦' }, decision: 'قررت المحكمة التأجيل لتبادل المذكرات وتحديد موعد للمرافعة الختامية', nextHearing: { day: '٨', month: 'يوليو', full: '٨ يوليو ٢٠٢٦' } },
@@ -152,6 +168,7 @@ export const clients = [
     filedDate: '١٨ مايو ٢٠٢٤',
     stage: 'سماع شهود',
     activeCases: 1,
+    assignedTo: 'sara_a',
     nextHearing: { day: '١١', month: 'يوليو', full: '١١ يوليو ٢٠٢٦', dayOfWeek: 'السبت', time: '١٠:٣٠ صباحاً', timeShort: '١٠:٣٠ ص' },
     sessions: [
       { id: 's-yasmine-2', date: { day: '٢٢', month: 'مايو', full: '٢٢ مايو ٢٠٢٦' }, decision: 'استمعت المحكمة لشاهدي الإثبات وأجّلت لسماع شاهد النفي في الجلسة القادمة', nextHearing: { day: '١١', month: 'يوليو', full: '١١ يوليو ٢٠٢٦' } },
@@ -178,6 +195,7 @@ export const clients = [
     filedDate: '٢٢ يونيو ٢٠٢٤',
     stage: 'تحقيقات',
     activeCases: 1,
+    assignedTo: 'karim_j',
     nextHearing: { day: '١٤', month: 'يوليو', full: '١٤ يوليو ٢٠٢٦', dayOfWeek: 'الثلاثاء', time: '٩:٣٠ صباحاً', timeShort: '٩:٣٠ ص' },
     sessions: [
       { id: 's-tarek-2', date: { day: '١٠', month: 'يونيو', full: '١٠ يونيو ٢٠٢٦' }, decision: 'قررت المحكمة التأجيل لاستيفاء التعلق بالحاضرين وضم تقرير البنك الرسمي', nextHearing: { day: '١٤', month: 'يوليو', full: '١٤ يوليو ٢٠٢٦' } },
@@ -204,6 +222,7 @@ export const clients = [
     filedDate: '١٥ نوفمبر ٢٠٢٣',
     stage: 'حجز للحكم',
     activeCases: 1,
+    assignedTo: 'nadine',
     nextHearing: { day: '٢٠', month: 'يوليو', full: '٢٠ يوليو ٢٠٢٦', dayOfWeek: 'الإثنين', time: '١١:٠٠ صباحاً', timeShort: '١١:٠٠ ص' },
     sessions: [
       { id: 's-rania-3', date: { day: '١', month: 'يونيو', full: '١ يونيو ٢٠٢٦' }, decision: 'حجزت المحكمة الدعوى للحكم في ضوء جميع المذكرات والمستندات المقدمة', nextHearing: { day: '٢٠', month: 'يوليو', full: '٢٠ يوليو ٢٠٢٦' } },
@@ -231,6 +250,7 @@ export const clients = [
     filedDate: '٧ فبراير ٢٠٢٤',
     stage: 'معاينة الخبير',
     activeCases: 1,
+    assignedTo: 'sara_a',
     nextHearing: { day: '٢٢', month: 'يوليو', full: '٢٢ يوليو ٢٠٢٦', dayOfWeek: 'الأربعاء', time: '١٠:٠٠ صباحاً', timeShort: '١٠:٠٠ ص' },
     sessions: [
       { id: 's-hossam-2', date: { day: '٥', month: 'يونيو', full: '٥ يونيو ٢٠٢٦' }, decision: 'تقررت إحالة الدعوى لخبير متخصص في الأراضي الزراعية لمعاينة الأرض ميدانياً', nextHearing: { day: '٢٢', month: 'يوليو', full: '٢٢ يوليو ٢٠٢٦' } },
@@ -257,6 +277,7 @@ export const clients = [
     filedDate: '٢٩ مارس ٢٠٢٤',
     stage: 'تقرير طبي',
     activeCases: 1,
+    assignedTo: 'karim_j',
     nextHearing: { day: '٢٥', month: 'يوليو', full: '٢٥ يوليو ٢٠٢٦', dayOfWeek: 'السبت', time: '٩:٠٠ صباحاً', timeShort: '٩:٠٠ ص' },
     sessions: [
       { id: 's-dalia-2', date: { day: '١٥', month: 'يونيو', full: '١٥ يونيو ٢٠٢٦' }, decision: 'قررت المحكمة التأجيل لانتظار التقرير الطبي الشامل من لجنة الخبراء', nextHearing: { day: '٢٥', month: 'يوليو', full: '٢٥ يوليو ٢٠٢٦' } },
@@ -283,6 +304,7 @@ export const clients = [
     filedDate: '١١ ديسمبر ٢٠٢٣',
     stage: 'تبادل المذكرات',
     activeCases: 1,
+    assignedTo: 'nadine',
     nextHearing: { day: '٢٩', month: 'يوليو', full: '٢٩ يوليو ٢٠٢٦', dayOfWeek: 'الأربعاء', time: '١٢:٣٠ ظهراً', timeShort: '١٢:٣٠ ظ' },
     sessions: [
       { id: 's-omar-2', date: { day: '٢٠', month: 'يونيو', full: '٢٠ يونيو ٢٠٢٦' }, decision: 'قررت المحكمة التأجيل لإعلان المدعى عليه الغائب بالطرق القانونية المقررة', nextHearing: { day: '٢٩', month: 'يوليو', full: '٢٩ يوليو ٢٠٢٦' } },

@@ -5,6 +5,7 @@ import LawyerDashboard from './screens/LawyerDashboard';
 import ClientsView from './screens/ClientsView';
 import CasePage from './screens/CasePage';
 import AddClient from './screens/AddClient';
+import TeamView from './screens/TeamView';
 import { clients as clientsData, getClientById, upcomingHearings as upcomingHearingsDefault } from './data/clients';
 
 const LAWYER_NAME = 'أ. نادين سامي';
@@ -85,16 +86,18 @@ export default function App() {
   const [lawyerView, setLawyerView] = useState('dashboard');
   const [selectedClientId, setSelectedClientId] = useState(scopedClientId || 'ahmed');
 
-  // Sessions added during this session, keyed by clientId
   const [sessionsMap, setSessionsMap] = useState({});
-  // nextHearing overrides updated when a session with a nextHearing is saved
   const [hearingOverrides, setHearingOverrides] = useState({});
+  const [assignmentOverrides, setAssignmentOverrides] = useState({});
 
   const getMergedClient = (id) => {
     const base = getClientById(id);
     if (!base) return base;
-    const override = hearingOverrides[id];
-    return override ? { ...base, nextHearing: override } : base;
+    return {
+      ...base,
+      nextHearing: hearingOverrides[id] || base.nextHearing,
+      assignedTo: assignmentOverrides[id] || base.assignedTo,
+    };
   };
 
   const getMergedSessions = (id) => {
@@ -111,6 +114,10 @@ export default function App() {
     if (session.nextHearing) {
       setHearingOverrides((prev) => ({ ...prev, [clientId]: session.nextHearing }));
     }
+  };
+
+  const handleReassign = (clientId, newAssigneeId) => {
+    setAssignmentOverrides((prev) => ({ ...prev, [clientId]: newAssigneeId }));
   };
 
   const mergedUpcomingHearings = upcomingHearingsDefault.map((h) => getMergedClient(h.id));
@@ -164,6 +171,7 @@ export default function App() {
         onBack={() => setLawyerView('clients')}
         sessions={getMergedSessions(selectedClientId)}
         onAddSession={(session) => handleAddSession(selectedClientId, session)}
+        onReassign={(newId) => handleReassign(selectedClientId, newId)}
       />
     );
   } else if (lawyerView === 'add') {
@@ -173,6 +181,8 @@ export default function App() {
         onSubmit={() => setLawyerView('dashboard')}
       />
     );
+  } else if (lawyerView === 'team') {
+    content = <TeamView allClients={mergedAllClients} />;
   } else {
     content = (
       <LawyerDashboard

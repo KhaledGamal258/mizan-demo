@@ -3,6 +3,7 @@ import { useState } from 'react';
 const NAV_ITEMS = [
   { key: 'dashboard', label: 'لوحة التحكم' },
   { key: 'clients', label: 'الموكّلون' },
+  { key: 'team', label: 'فريق المكتب' },
 ];
 
 function NavIcon({ active }) {

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { team, getTeamMemberById } from '../data/clients';
 
 const initialDocs = [
   { name: 'عقد العمل الأصلي', date: '١٥ مايو ٢٠٢٦', size: '2.4 MB', visible: true },
@@ -73,12 +74,13 @@ function NotVisiblePill({ compact }) {
   );
 }
 
-export default function CasePage({ client, lawyerName, onBack, sessions = [], onAddSession }) {
+export default function CasePage({ client, lawyerName, onBack, sessions = [], onAddSession, onReassign }) {
   const [docs, setDocs] = useState(initialDocs);
   const [updates, setUpdates] = useState(initialUpdates);
   const [messages, setMessages] = useState(initialMessages);
   const [replyText, setReplyText] = useState('');
 
+  const [reassignOpen, setReassignOpen] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [formDate, setFormDate] = useState('');
   const [formDecision, setFormDecision] = useState('');
@@ -180,7 +182,42 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
             </div>
 
             <div style={{ color: '#fff', fontSize: 18, fontWeight: 800, lineHeight: 1.25, marginBottom: 4 }}>{client.caseTitle}</div>
-            <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11.5, marginBottom: 16 }}>{client.name} — رقم القضية: {client.caseNumber}</div>
+            <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11.5, marginBottom: 10 }}>{client.name} — رقم القضية: {client.caseNumber}</div>
+
+            {/* Assignee chip with reassignment dropdown */}
+            <div style={{ position: 'relative', display: 'inline-block', marginBottom: 14 }}>
+              <button
+                type="button"
+                onClick={() => setReassignOpen((o) => !o)}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(255,255,255,0.09)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 20, padding: '5px 12px 5px 10px', cursor: 'pointer', fontFamily: "'Almarai',sans-serif" }}
+              >
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: getTeamMemberById(client.assignedTo)?.avatarColor || '#C9A870', flexShrink: 0 }} />
+                <span style={{ color: 'rgba(255,255,255,0.78)', fontSize: 12, fontWeight: 700 }}>المسند إليه: {getTeamMemberById(client.assignedTo)?.name || '—'}</span>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" style={{ marginRight: 2 }}>
+                  <path d="M6 9l6 6 6-6" stroke="rgba(255,255,255,0.45)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+              {reassignOpen && (
+                <div style={{ position: 'absolute', top: 'calc(100% + 6px)', right: 0, background: '#fff', borderRadius: 10, boxShadow: '0 8px 28px rgba(0,0,0,0.18)', padding: '6px 0', minWidth: 210, zIndex: 50 }}>
+                  {team.map((member) => (
+                    <button
+                      key={member.id}
+                      type="button"
+                      onClick={() => { if (onReassign) onReassign(member.id); setReassignOpen(false); }}
+                      style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 14px', background: member.id === client.assignedTo ? 'rgba(28,45,79,0.05)' : 'transparent', border: 'none', cursor: 'pointer', fontFamily: "'Almarai',sans-serif", textAlign: 'right' }}
+                    >
+                      <div style={{ width: 26, height: 26, borderRadius: 7, background: member.avatarBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: member.avatarColor, flexShrink: 0 }}>{member.initial}</div>
+                      <span style={{ color: '#1C2D4F', fontSize: 13, fontWeight: member.id === client.assignedTo ? 800 : 700, flex: 1 }}>{member.name}</span>
+                      {member.id === client.assignedTo && (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                          <path d="M20 6L9 17l-5-5" stroke="#1C2D4F" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             <div style={{ background: 'rgba(255,255,255,0.055)', borderRadius: 10, overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 1 }}>
               <div style={{ display: 'flex', gap: 1, background: 'rgba(255,255,255,0.055)' }}>

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { clients as clientsDefault, caseTypes, courts, governorates } from '../data/clients';
+import { clients as clientsDefault, caseTypes, courts, governorates, getTeamMemberById } from '../data/clients';
 
 function buildClientLink(id) {
   const base = import.meta.env.BASE_URL;
@@ -90,7 +90,7 @@ export default function ClientsView({ onOpenCase, allClients = clientsDefault })
         <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: "'Almarai',sans-serif" }}>
           <thead>
             <tr style={{ background: '#F6F4F0' }}>
-              {['الموكّل', 'القضايا النشطة', 'الجلسة القادمة', 'الحالة', ''].map((h) => (
+              {['الموكّل', 'القضايا النشطة', 'الجلسة القادمة', 'الحالة', 'المسند إليه', ''].map((h) => (
                 <th key={h} style={{ textAlign: 'right', padding: '12px 16px', color: '#9BA3AF', fontSize: 11.5, fontWeight: 700 }}>{h}</th>
               ))}
             </tr>
@@ -114,6 +114,14 @@ export default function ClientsView({ onOpenCase, allClients = clientsDefault })
                     <div style={{ width: 5, height: 5, borderRadius: '50%', background: c.statusColor }} />
                     <span style={{ color: c.statusColor, fontSize: 11, fontWeight: 700 }}>{c.status}</span>
                   </div>
+                </td>
+                <td style={{ padding: '12px 16px' }}>
+                  {(() => { const m = getTeamMemberById(c.assignedTo); return m ? (
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                      <div style={{ width: 22, height: 22, borderRadius: 6, background: m.avatarBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800, color: m.avatarColor, flexShrink: 0 }}>{m.initial}</div>
+                      <span style={{ color: '#5D6579', fontSize: 12.5, fontWeight: 700 }}>{m.name}</span>
+                    </div>
+                  ) : null; })()}
                 </td>
                 <td style={{ padding: '12px 16px' }}>
                   <button
@@ -148,11 +156,17 @@ export default function ClientsView({ onOpenCase, allClients = clientsDefault })
                   </div>
                 </div>
                 <div style={{ color: '#5D6579', fontSize: 12.5, marginBottom: 6 }}>{c.caseTitle}</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#B2B8C2', fontSize: 11 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#B2B8C2', fontSize: 11, marginBottom: 6 }}>
                   <span>{c.nextHearing.full}</span>
                   <span style={{ color: '#D4CFC5', margin: '0 2px' }}>·</span>
                   <span>{c.courtShort}</span>
                 </div>
+                {(() => { const m = getTeamMemberById(c.assignedTo); return m ? (
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: m.avatarColor }} />
+                    <span style={{ color: '#9BA3AF', fontSize: 11, fontWeight: 700 }}>{m.name}</span>
+                  </div>
+                ) : null; })()}
               </div>
             </div>
             <button
