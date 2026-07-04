@@ -20,7 +20,7 @@ function selectStyle() {
   };
 }
 
-export default function ClientsView({ onOpenCase, allClients = clientsDefault }) {
+export default function ClientsView({ onOpenCase, allClients = clientsDefault, onCopied }) {
   const [tab, setTab] = useState('active');
   const [search, setSearch] = useState('');
   const [caseType, setCaseType] = useState('');
@@ -45,14 +45,11 @@ export default function ClientsView({ onOpenCase, allClients = clientsDefault })
 
   const emptyMessage = tab === 'archived' ? 'لا توجد قضايا مؤرشفة مطابقة' : 'لا يوجد موكّلون مطابقون';
 
-  const onCopyLink = async (id) => {
+  const onCopyLink = (id) => {
     const link = buildClientLink(id);
-    try {
-      await navigator.clipboard.writeText(link);
-    } catch {
-      // demo only — clipboard may be unavailable in some contexts
-    }
+    navigator.clipboard?.writeText(link)?.catch(() => {});
     setCopiedId(id);
+    if (onCopied) onCopied();
     setTimeout(() => setCopiedId((cur) => (cur === id ? null : cur)), 1800);
   };
 

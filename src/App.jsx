@@ -168,7 +168,11 @@ export default function App() {
             </button>
           </div>
         )}
-        <ClientPortal client={getMergedClient(selectedClientId)} lawyerName={LAWYER_NAME} />
+        <ClientPortal
+          client={getMergedClient(selectedClientId)}
+          lawyerName={LAWYER_NAME}
+          latestSession={getMergedSessions(selectedClientId)[0]}
+        />
       </div>
     );
   }
@@ -180,7 +184,13 @@ export default function App() {
 
   let content;
   if (lawyerView === 'clients') {
-    content = <ClientsView onOpenCase={openCase} allClients={mergedAllClients} />;
+    content = (
+      <ClientsView
+        onOpenCase={openCase}
+        allClients={mergedAllClients}
+        onCopied={() => showToast('تم نسخ رابط الموكّل ✓')}
+      />
+    );
   } else if (lawyerView === 'case') {
     content = (
       <CasePage

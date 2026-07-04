@@ -43,9 +43,16 @@ function FileIcon() {
   );
 }
 
-export default function ClientPortal({ client, lawyerName }) {
+export default function ClientPortal({ client, lawyerName, latestSession }) {
   const [messageText, setMessageText] = useState('');
   const [messageSent, setMessageSent] = useState(false);
+
+  const displayedUpdates = latestSession
+    ? [
+        { title: 'قرار الجلسة الأخيرة', desc: latestSession.decision, date: latestSession.date.full, dot: '#C9A870' },
+        ...updates,
+      ]
+    : updates;
 
   const onSend = () => {
     if (!messageText.trim()) return;
@@ -187,9 +194,9 @@ export default function ClientPortal({ client, lawyerName }) {
             <span style={{ color: '#1C2D4F', fontSize: 16, fontWeight: 800 }}>آخر التحديثات</span>
           </div>
           <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 2px 16px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
-            {updates.map((upd, idx) => {
+            {displayedUpdates.map((upd, idx) => {
               const isFirst = idx === 0;
-              const isLast = idx === updates.length - 1;
+              const isLast = idx === displayedUpdates.length - 1;
               return (
                 <div
                   key={upd.title}
