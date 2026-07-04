@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { team, getTeamMemberById } from '../data/clients';
+import { team, getTeamMemberById, CASE_STATUS_OPTIONS } from '../data/clients';
 import { buildDateObj } from '../utils/arabicDate';
 import { openMockDocument } from '../utils/mockPdf';
 
@@ -62,7 +62,7 @@ function NotVisiblePill({ compact }) {
   );
 }
 
-export default function CasePage({ client, lawyerName, onBack, sessions = [], onAddSession, onReassign, onArchive, onRestore }) {
+export default function CasePage({ client, lawyerName, onBack, sessions = [], onAddSession, onReassign, onArchive, onRestore, onStatusChange }) {
   const archived = !!client.archived;
   const [docs, setDocs] = useState(initialDocs);
   const [updates, setUpdates] = useState(initialUpdates);
@@ -78,6 +78,16 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
   const [formNextDate, setFormNextDate] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmArchiveOpen, setConfirmArchiveOpen] = useState(false);
+  const [statusMenuOpen, setStatusMenuOpen] = useState(false);
+  const [finishPromptDismissed, setFinishPromptDismissed] = useState(false);
+
+  const showFinishPrompt = client.status === 'منتهية' && !archived && !finishPromptDismissed;
+
+  const handleStatusSelect = (key) => {
+    setStatusMenuOpen(false);
+    if (onStatusChange) onStatusChange(key);
+    if (key === 'منتهية') setFinishPromptDismissed(false);
+  };
 
   const toggleDoc = (idx) => {
     if (archived) return;
@@ -255,9 +265,35 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
           <div style={{ height: 2.5, background: 'linear-gradient(to left, transparent 0%, #C9A870 20%, #C9A870 80%, transparent 100%)' }} />
           <div style={{ padding: '17px 19px 19px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 13 }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: client.statusBg, border: `1px solid ${client.statusBorder}`, borderRadius: 20, padding: '4px 12px' }}>
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: client.statusColor }} />
-                <span style={{ color: client.statusColor, fontSize: 12, fontWeight: 700 }}>{client.status}</span>
+              <div style={{ position: 'relative' }}>
+                <button
+                  type="button"
+                  onClick={() => !archived && setStatusMenuOpen((o) => !o)}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: client.statusBg, border: `1px solid ${client.statusBorder}`, borderRadius: 20, padding: '4px 12px', cursor: archived ? 'default' : 'pointer', fontFamily: "'Almarai',sans-serif" }}
+                >
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: client.statusColor }} />
+                  <span style={{ color: client.statusColor, fontSize: 12, fontWeight: 700 }}>{client.status}</span>
+                  {!archived && (
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" style={{ marginRight: 1 }}>
+                      <path d="M6 9l6 6 6-6" stroke={client.statusColor} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </button>
+                {statusMenuOpen && (
+                  <div style={{ position: 'absolute', top: 'calc(100% + 6px)', right: 0, background: '#fff', borderRadius: 10, boxShadow: '0 8px 28px rgba(0,0,0,0.18)', padding: '6px 0', minWidth: 160, zIndex: 50 }}>
+                    {CASE_STATUS_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.key}
+                        type="button"
+                        onClick={() => handleStatusSelect(opt.key)}
+                        style={{ display: 'flex', alignItems: 'center', gap: 9, width: '100%', padding: '9px 14px', background: opt.key === client.status ? 'rgba(28,45,79,0.05)' : 'transparent', border: 'none', cursor: 'pointer', fontFamily: "'Almarai',sans-serif", textAlign: 'right' }}
+                      >
+                        <div style={{ width: 7, height: 7, borderRadius: '50%', background: opt.color, flexShrink: 0 }} />
+                        <span style={{ color: '#1C2D4F', fontSize: 13, fontWeight: opt.key === client.status ? 800 : 700, flex: 1 }}>{opt.key}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
               <div style={{ textAlign: 'left' }}>
                 <div style={{ color: 'rgba(255,255,255,0.32)', fontSize: 9.5, marginBottom: 3 }}>الجلسة القادمة</div>
@@ -329,6 +365,34 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
             </div>
           </div>
         </div>
+
+        {showFinishPrompt && (
+          <div style={{ background: 'rgba(22,163,74,0.07)', border: '1.5px solid rgba(22,163,74,0.25)', borderRadius: 14, padding: '13px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+                <circle cx="12" cy="12" r="10" stroke="#16A34A" strokeWidth="1.8" />
+                <path d="M8 12.5l2.5 2.5L16 9" stroke="#16A34A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span style={{ color: '#15803D', fontSize: 13, fontWeight: 700 }}>القضية انتهت — هل تريد نقلها للأرشيف؟</span>
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                type="button"
+                onClick={() => setConfirmArchiveOpen(true)}
+                style={{ background: '#16A34A', color: '#fff', border: 'none', borderRadius: 20, padding: '7px 16px', fontSize: 12.5, fontWeight: 700, fontFamily: "'Almarai',sans-serif", cursor: 'pointer' }}
+              >
+                نقل للأرشيف
+              </button>
+              <button
+                type="button"
+                onClick={() => setFinishPromptDismissed(true)}
+                style={{ background: 'transparent', border: '1.5px solid rgba(22,163,74,0.3)', borderRadius: 20, padding: '7px 16px', fontSize: 12.5, fontWeight: 700, fontFamily: "'Almarai',sans-serif", color: '#15803D', cursor: 'pointer' }}
+              >
+                ليس الآن
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* TEAM DISCUSSION — internal only, never shown to client */}
         <div>

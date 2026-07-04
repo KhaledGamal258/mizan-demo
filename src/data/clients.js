@@ -10,6 +10,20 @@ export function getTeamMemberById(id) {
   return team.find((m) => m.id === id);
 }
 
+// Discrete case-status buckets — separate from the free-text `status`
+// seeded per client, which only sets the initial bucket (see
+// deriveDefaultCaseStatus in App.jsx).
+export const CASE_STATUS_OPTIONS = [
+  { key: 'قيد النظر', color: '#F59E0B', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.22)' },
+  { key: 'جارية', color: '#3B82F6', bg: 'rgba(59,130,246,0.09)', border: 'rgba(59,130,246,0.2)' },
+  { key: 'مؤجلة', color: '#8B5CF6', bg: 'rgba(139,92,246,0.09)', border: 'rgba(139,92,246,0.18)' },
+  { key: 'منتهية', color: '#16A34A', bg: 'rgba(22,163,74,0.09)', border: 'rgba(22,163,74,0.22)' },
+];
+
+export function getCaseStatusOption(key) {
+  return CASE_STATUS_OPTIONS.find((s) => s.key === key) || CASE_STATUS_OPTIONS[0];
+}
+
 export const clients = [
   {
     id: 'ahmed',

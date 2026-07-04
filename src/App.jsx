@@ -6,7 +6,7 @@ import ClientsView from './screens/ClientsView';
 import CasePage from './screens/CasePage';
 import AddClient from './screens/AddClient';
 import TeamView from './screens/TeamView';
-import { clients as clientsData, getClientById, upcomingHearings as upcomingHearingsDefault } from './data/clients';
+import { clients as clientsData, getClientById, upcomingHearings as upcomingHearingsDefault, getCaseStatusOption } from './data/clients';
 import { buildHearingObj, toArNum } from './utils/arabicDate';
 
 const NEW_CLIENT_PALETTE = [
@@ -16,6 +16,12 @@ const NEW_CLIENT_PALETTE = [
   { avatarBg: 'rgba(236,72,153,0.1)', avatarColor: '#EC4899' },
   { avatarBg: 'rgba(245,158,11,0.1)', avatarColor: '#F59E0B' },
 ];
+
+function deriveDefaultCaseStatus(base) {
+  if (base.archived || ['صدر الحكم', 'تمت التسوية'].includes(base.status)) return 'منتهية';
+  if (base.status === 'قيد النظر') return 'قيد النظر';
+  return 'جارية';
+}
 
 const LAWYER_NAME = 'أ. نادين سامي';
 
@@ -99,6 +105,7 @@ export default function App() {
   const [hearingOverrides, setHearingOverrides] = useState({});
   const [assignmentOverrides, setAssignmentOverrides] = useState({});
   const [archiveOverrides, setArchiveOverrides] = useState({});
+  const [statusOverrides, setStatusOverrides] = useState({});
   const [addedClients, setAddedClients] = useState([]);
   const [toast, setToast] = useState(null);
 
@@ -112,12 +119,22 @@ export default function App() {
   const getMergedClient = (id) => {
     const base = findBaseClient(id);
     if (!base) return base;
+    const caseStatus = statusOverrides[id] || deriveDefaultCaseStatus(base);
+    const statusOption = getCaseStatusOption(caseStatus);
     return {
       ...base,
       nextHearing: hearingOverrides[id] || base.nextHearing,
       assignedTo: assignmentOverrides[id] || base.assignedTo,
       archived: archiveOverrides[id] !== undefined ? archiveOverrides[id] : !!base.archived,
+      status: caseStatus,
+      statusColor: statusOption.color,
+      statusBg: statusOption.bg,
+      statusBorder: statusOption.border,
     };
+  };
+
+  const handleStatusChange = (clientId, newStatus) => {
+    setStatusOverrides((prev) => ({ ...prev, [clientId]: newStatus }));
   };
 
   const getMergedSessions = (id) => {
@@ -249,6 +266,7 @@ export default function App() {
         onReassign={(newId) => handleReassign(selectedClientId, newId)}
         onArchive={() => handleArchive(selectedClientId)}
         onRestore={() => handleRestore(selectedClientId)}
+        onStatusChange={(newStatus) => handleStatusChange(selectedClientId, newStatus)}
       />
     );
   } else if (lawyerView === 'add') {
