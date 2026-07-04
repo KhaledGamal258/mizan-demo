@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { team, getTeamMemberById, CASE_STATUS_OPTIONS } from '../data/clients';
 import { buildDateObj } from '../utils/arabicDate';
-import { openMockDocument } from '../utils/mockPdf';
+import { openMockDocument, getFileTypeLabel } from '../utils/mockFiles';
 import { generateId } from '../utils/id';
 
 const initialDocs = [
-  { id: 'doc-1', name: 'عقد العمل الأصلي', date: '١٥ مايو ٢٠٢٦', size: '2.4 MB', visible: true },
-  { id: 'doc-2', name: 'قرار الفصل التعسفي', date: '٢ مارس ٢٠٢٦', size: '1.1 MB', visible: false },
-  { id: 'doc-3', name: 'محضر الجلسة السابقة', date: '١٨ أبريل ٢٠٢٦', size: '0.8 MB', visible: true },
+  { id: 'doc-1', name: 'عقد العمل الأصلي', date: '١٥ مايو ٢٠٢٦', size: '2.4 MB', visible: true, type: 'pdf' },
+  { id: 'doc-2', name: 'قرار الفصل التعسفي', date: '٢ مارس ٢٠٢٦', size: '1.1 MB', visible: false, type: 'word' },
+  { id: 'doc-3', name: 'محضر الجلسة السابقة', date: '١٨ أبريل ٢٠٢٦', size: '0.8 MB', visible: true, type: 'image' },
 ];
 
 const initialUpdates = [
@@ -619,7 +619,12 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ color: '#1C2D4F', fontSize: 13.5, fontWeight: 700, marginBottom: 3 }}>{item.name}</div>
-                      <div style={{ color: '#9BA3AF', fontSize: 11.5, marginBottom: 10 }}>{item.date} · {item.size}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#9BA3AF', fontSize: 11.5, marginBottom: 10 }}>
+                        <span>{item.date} · {item.size}</span>
+                        <span style={{ background: 'rgba(28,45,79,0.07)', color: '#5D6579', fontSize: 9.5, fontWeight: 800, letterSpacing: 0.3, borderRadius: 5, padding: '1px 6px' }}>
+                          {getFileTypeLabel(item.type)}
+                        </span>
+                      </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                         <div
                           role={archived ? undefined : 'button'}
@@ -632,15 +637,22 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
                         </div>
                         <button
                           type="button"
-                          onClick={() => openMockDocument(item.name, item.date)}
-                          aria-label={`فتح ${item.name}`}
+                          onClick={() => openMockDocument(item)}
+                          aria-label={item.type === 'word' ? `تحميل ${item.name}` : `فتح ${item.name}`}
                           style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(28,45,79,0.07)', border: 'none', borderRadius: 20, padding: '5px 11px', cursor: 'pointer' }}
                         >
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="#1C2D4F" strokeWidth="1.8" strokeLinejoin="round" />
-                            <circle cx="12" cy="12" r="3" stroke="#1C2D4F" strokeWidth="1.8" />
-                          </svg>
-                          <span style={{ color: '#1C2D4F', fontSize: 11, fontWeight: 700 }}>فتح</span>
+                          {item.type === 'word' ? (
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                              <path d="M12 16V4M12 16l-4-4M12 16l4-4" stroke="#1C2D4F" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+                              <path d="M4 20h16" stroke="#1C2D4F" strokeWidth="1.9" strokeLinecap="round" />
+                            </svg>
+                          ) : (
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="#1C2D4F" strokeWidth="1.8" strokeLinejoin="round" />
+                              <circle cx="12" cy="12" r="3" stroke="#1C2D4F" strokeWidth="1.8" />
+                            </svg>
+                          )}
+                          <span style={{ color: '#1C2D4F', fontSize: 11, fontWeight: 700 }}>{item.type === 'word' ? 'تحميل' : 'فتح'}</span>
                         </button>
                       </div>
                     </div>
