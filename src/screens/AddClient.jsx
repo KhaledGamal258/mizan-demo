@@ -1,17 +1,6 @@
 import { useState } from 'react';
 import { caseTypes, courts, governorates } from '../data/clients';
-
-const AR_MONTHS = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
-
-function toArNum(n) {
-  return String(n).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]);
-}
-
-function formatArabicDate(iso) {
-  if (!iso) return '';
-  const d = new Date(iso);
-  return `${toArNum(d.getUTCDate())} ${AR_MONTHS[d.getUTCMonth()]} ${toArNum(d.getUTCFullYear())}`;
-}
+import { buildDateObj } from '../utils/arabicDate';
 
 const fieldLabelStyle = { color: '#1C2D4F', fontSize: 12.5, fontWeight: 700, marginBottom: 7 };
 const fieldBoxStyle = { width: '100%', background: '#fff', border: '1.5px solid #E8E4DC', borderRadius: 10, padding: '12px 14px', fontFamily: "'Almarai',sans-serif", fontSize: 13.5, color: '#1C2D4F', boxSizing: 'border-box', outline: 'none' };
@@ -40,6 +29,13 @@ export default function AddClient({ onBack, onSubmit }) {
   const [governorate, setGovernorate] = useState('القاهرة');
   const [hearingDate, setHearingDate] = useState('2026-06-28');
 
+  const canSubmit = name.trim() && caseTitle.trim() && caseType && court && governorate;
+
+  const handleSubmit = () => {
+    if (!canSubmit) return;
+    onSubmit({ name: name.trim(), phone: phone.trim(), email: email.trim(), caseTitle: caseTitle.trim(), caseType, court, governorate, hearingDate });
+  };
+
   return (
     <div dir="rtl" style={{ fontFamily: "'Almarai',sans-serif", background: '#F6F4F0', display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* Navy nav bar */}
@@ -60,10 +56,11 @@ export default function AddClient({ onBack, onSubmit }) {
         </div>
         <button
           type="button"
-          onClick={onSubmit}
-          style={{ width: 34, textAlign: 'center', cursor: 'pointer', flexShrink: 0, background: 'none', border: 'none' }}
+          onClick={handleSubmit}
+          disabled={!canSubmit}
+          style={{ width: 34, textAlign: 'center', cursor: canSubmit ? 'pointer' : 'not-allowed', flexShrink: 0, background: 'none', border: 'none' }}
         >
-          <span style={{ color: '#C9A870', fontSize: 13, fontWeight: 700 }}>حفظ</span>
+          <span style={{ color: canSubmit ? '#C9A870' : 'rgba(201,168,112,0.4)', fontSize: 13, fontWeight: 700 }}>حفظ</span>
         </button>
       </div>
 
@@ -146,7 +143,7 @@ export default function AddClient({ onBack, onSubmit }) {
               />
             </div>
             {hearingDate && (
-              <div style={{ color: '#9BA3AF', fontSize: 11.5, marginTop: 6 }}>{formatArabicDate(hearingDate)}</div>
+              <div style={{ color: '#9BA3AF', fontSize: 11.5, marginTop: 6 }}>{buildDateObj(hearingDate).full}</div>
             )}
           </div>
         </div>
@@ -154,13 +151,14 @@ export default function AddClient({ onBack, onSubmit }) {
         {/* Submit button */}
         <button
           type="button"
-          onClick={onSubmit}
-          style={{ width: '100%', background: '#1C2D4F', border: 'none', borderRadius: 14, padding: '17px 24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, cursor: 'pointer', boxShadow: '0 6px 24px rgba(28,45,79,0.26)', marginBottom: 20 }}
+          onClick={handleSubmit}
+          disabled={!canSubmit}
+          style={{ width: '100%', background: canSubmit ? '#1C2D4F' : '#E8E4DC', border: 'none', borderRadius: 14, padding: '17px 24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, cursor: canSubmit ? 'pointer' : 'not-allowed', boxShadow: canSubmit ? '0 6px 24px rgba(28,45,79,0.26)' : 'none', marginBottom: 20 }}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M20 6L9 17l-5-5" stroke="#C9A870" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M20 6L9 17l-5-5" stroke={canSubmit ? '#C9A870' : '#B2B8C2'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          <span style={{ color: '#C9A870', fontSize: 16, fontWeight: 800, lineHeight: 1 }}>إضافة الموكّل</span>
+          <span style={{ color: canSubmit ? '#C9A870' : '#B2B8C2', fontSize: 16, fontWeight: 800, lineHeight: 1 }}>إضافة الموكّل</span>
         </button>
 
         <div style={{ height: 40 }} />

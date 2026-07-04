@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { team, getTeamMemberById } from '../data/clients';
+import { buildDateObj } from '../utils/arabicDate';
 
 const initialDocs = [
   { name: 'عقد العمل الأصلي', date: '١٥ مايو ٢٠٢٦', size: '2.4 MB', visible: true },
@@ -18,20 +19,6 @@ const initialMessages = [
   { from: 'lawyer', text: 'صباح النور، نعم تم تقديم المذكرة اليوم بنجاح، كل شيء على ما يرام', time: '١٠:٣٢ ص · ١٢ يونيو' },
   { from: 'client', text: 'شكراً جزيلاً، هل هناك أي مستندات أحتاج لتوقيعها قبل الجلسة؟', time: '٢:٠٠ م · ١٤ يونيو' },
 ];
-
-const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-
-function toArNum(n) {
-  return String(n).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]);
-}
-
-function buildDateObj(iso) {
-  const d = new Date(iso);
-  const day = d.getUTCDate();
-  const month = AR_MONTHS[d.getUTCMonth()];
-  const year = d.getUTCFullYear();
-  return { day: toArNum(day), month, full: `${toArNum(day)} ${month} ${toArNum(year)}` };
-}
 
 function FileIcon() {
   return (

@@ -7,6 +7,15 @@ import CasePage from './screens/CasePage';
 import AddClient from './screens/AddClient';
 import TeamView from './screens/TeamView';
 import { clients as clientsData, getClientById, upcomingHearings as upcomingHearingsDefault } from './data/clients';
+import { buildHearingObj, toArNum } from './utils/arabicDate';
+
+const NEW_CLIENT_PALETTE = [
+  { avatarBg: 'rgba(59,130,246,0.1)', avatarColor: '#3B82F6' },
+  { avatarBg: 'rgba(20,184,166,0.1)', avatarColor: '#14B8A6' },
+  { avatarBg: 'rgba(139,92,246,0.1)', avatarColor: '#8B5CF6' },
+  { avatarBg: 'rgba(236,72,153,0.1)', avatarColor: '#EC4899' },
+  { avatarBg: 'rgba(245,158,11,0.1)', avatarColor: '#F59E0B' },
+];
 
 const LAWYER_NAME = 'أ. نادين سامي';
 
@@ -90,6 +99,7 @@ export default function App() {
   const [hearingOverrides, setHearingOverrides] = useState({});
   const [assignmentOverrides, setAssignmentOverrides] = useState({});
   const [archiveOverrides, setArchiveOverrides] = useState({});
+  const [addedClients, setAddedClients] = useState([]);
   const [toast, setToast] = useState(null);
 
   const showToast = (msg) => {
@@ -97,8 +107,10 @@ export default function App() {
     setTimeout(() => setToast((t) => (t === msg ? null : t)), 2500);
   };
 
+  const findBaseClient = (id) => addedClients.find((c) => c.id === id) || getClientById(id);
+
   const getMergedClient = (id) => {
-    const base = getClientById(id);
+    const base = findBaseClient(id);
     if (!base) return base;
     return {
       ...base,
@@ -110,8 +122,42 @@ export default function App() {
 
   const getMergedSessions = (id) => {
     const dynamic = sessionsMap[id] || [];
-    const base = getClientById(id)?.sessions || [];
+    const base = findBaseClient(id)?.sessions || [];
     return [...dynamic, ...base];
+  };
+
+  const handleAddClient = (form) => {
+    const id = `client-${Date.now()}`;
+    const palette = NEW_CLIENT_PALETTE[addedClients.length % NEW_CLIENT_PALETTE.length];
+    const filedToday = buildHearingObj(new Date().toISOString().slice(0, 10));
+    const newClient = {
+      id,
+      name: form.name,
+      phone: form.phone,
+      initial: form.name.trim().charAt(0) || '؟',
+      avatarBg: palette.avatarBg,
+      avatarColor: palette.avatarColor,
+      caseTitle: form.caseTitle,
+      caseType: form.caseType,
+      caseNumber: `${filedToday.full.split(' ').pop()}/${toArNum(1000 + addedClients.length)}`,
+      court: form.court,
+      courtShort: form.court.replace(/^محكمة\s+/, ''),
+      governorate: form.governorate,
+      status: 'قيد النظر',
+      statusColor: '#F59E0B',
+      statusBg: 'rgba(245,158,11,0.1)',
+      statusBorder: 'rgba(245,158,11,0.22)',
+      filedDate: filedToday.full,
+      stage: 'رفع الدعوى',
+      activeCases: 1,
+      assignedTo: 'nadine',
+      nextHearing: buildHearingObj(form.hearingDate),
+      sessions: [],
+      teamDiscussion: [],
+    };
+    setAddedClients((prev) => [...prev, newClient]);
+    showToast('تمت إضافة الموكّل بنجاح');
+    setLawyerView('clients');
   };
 
   const handleAddSession = (clientId, session) => {
@@ -140,7 +186,7 @@ export default function App() {
   };
 
   const mergedUpcomingHearings = upcomingHearingsDefault.map((h) => getMergedClient(h.id));
-  const mergedAllClients = clientsData.map((c) => getMergedClient(c.id));
+  const mergedAllClients = [...clientsData, ...addedClients].map((c) => getMergedClient(c.id));
 
   const goHome = () => {
     if (scopedClientId) {
@@ -209,7 +255,7 @@ export default function App() {
     content = (
       <AddClient
         onBack={() => setLawyerView('dashboard')}
-        onSubmit={() => setLawyerView('dashboard')}
+        onSubmit={handleAddClient}
       />
     );
   } else if (lawyerView === 'team') {
