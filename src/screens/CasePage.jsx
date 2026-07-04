@@ -304,8 +304,16 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
               </div>
             </div>
 
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(201,168,112,0.14)', border: '1px solid rgba(201,168,112,0.3)', borderRadius: 20, padding: '4px 12px', marginBottom: 9 }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="8" r="3.5" fill="#C9A870" />
+                <path d="M5 20c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="#C9A870" strokeWidth="1.6" strokeLinecap="round" />
+              </svg>
+              <span style={{ color: '#C9A870', fontSize: 12.5, fontWeight: 800 }}>الموكّل: {client.name}</span>
+            </div>
+
             <div style={{ color: '#fff', fontSize: 18, fontWeight: 800, lineHeight: 1.25, marginBottom: 4 }}>{client.caseTitle}</div>
-            <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11.5, marginBottom: 10 }}>{client.name} — رقم القضية: {client.caseNumber}</div>
+            <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11.5, marginBottom: 10 }}>رقم القضية: {client.caseNumber}</div>
 
             {/* Assignee chip with reassignment dropdown */}
             <div style={{ position: 'relative', display: 'inline-block', marginBottom: 14 }}>
