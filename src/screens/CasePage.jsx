@@ -4,6 +4,7 @@ import { buildDateObj } from '../utils/arabicDate';
 import { openMockDocument, getFileTypeLabel } from '../utils/mockFiles';
 import { generateId } from '../utils/id';
 import { getDaysRemaining, getAppealUrgency, getUrgencyStyle, formatDeadlineMessage } from '../utils/deadlines';
+import WhatsAppButton from '../components/WhatsAppButton';
 
 const initialDocs = [
   { id: 'doc-1', name: 'عقد العمل الأصلي', date: '١٥ مايو ٢٠٢٦', size: '2.4 MB', visible: true, type: 'pdf' },
@@ -64,7 +65,7 @@ function NotVisiblePill({ compact }) {
   );
 }
 
-export default function CasePage({ client, lawyerName, onBack, sessions = [], onAddSession, onReassign, onArchive, onRestore, onStatusChange }) {
+export default function CasePage({ client, lawyerName, onBack, sessions = [], onAddSession, onReassign, onArchive, onRestore, onStatusChange, onWhatsAppClick }) {
   const archived = !!client.archived;
   const [docs, setDocs] = useState(initialDocs);
   const [updates, setUpdates] = useState(initialUpdates);
@@ -306,7 +307,10 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
               </div>
               <div style={{ textAlign: 'left' }}>
                 <div style={{ color: 'rgba(255,255,255,0.32)', fontSize: 9.5, marginBottom: 3 }}>الجلسة القادمة</div>
-                <div style={{ color: '#C9A870', fontSize: 14, fontWeight: 800, lineHeight: 1 }}>{client.nextHearing.full}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 7, justifyContent: 'flex-end' }}>
+                  <div style={{ color: '#C9A870', fontSize: 14, fontWeight: 800, lineHeight: 1 }}>{client.nextHearing.full}</div>
+                  <WhatsAppButton compact onClick={onWhatsAppClick} />
+                </div>
               </div>
             </div>
 

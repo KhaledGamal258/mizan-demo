@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { clients as clientsDefault, caseTypes, courts, governorates, getTeamMemberById } from '../data/clients';
+import WhatsAppButton from '../components/WhatsAppButton';
 
 function buildClientLink(id) {
   const base = import.meta.env.BASE_URL;
@@ -20,7 +21,7 @@ function selectStyle() {
   };
 }
 
-export default function ClientsView({ onOpenCase, allClients = clientsDefault, onCopied }) {
+export default function ClientsView({ onOpenCase, allClients = clientsDefault, onCopied, onWhatsAppClick }) {
   const [tab, setTab] = useState('active');
   const [search, setSearch] = useState('');
   const [caseType, setCaseType] = useState('');
@@ -157,13 +158,16 @@ export default function ClientsView({ onOpenCase, allClients = clientsDefault, o
                   ) : null; })()}
                 </td>
                 <td style={{ padding: '12px 16px' }}>
-                  <button
-                    type="button"
-                    onClick={() => onCopyLink(c.id)}
-                    style={{ background: copiedId === c.id ? 'rgba(22,163,74,0.1)' : 'rgba(28,45,79,0.07)', border: 'none', borderRadius: 20, padding: '6px 12px', cursor: 'pointer', color: copiedId === c.id ? '#16A34A' : '#1C2D4F', fontSize: 11.5, fontWeight: 700, fontFamily: "'Almarai',sans-serif", whiteSpace: 'nowrap' }}
-                  >
-                    {copiedId === c.id ? 'تم النسخ' : 'نسخ رابط الموكّل'}
-                  </button>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <button
+                      type="button"
+                      onClick={() => onCopyLink(c.id)}
+                      style={{ background: copiedId === c.id ? 'rgba(22,163,74,0.1)' : 'rgba(28,45,79,0.07)', border: 'none', borderRadius: 20, padding: '6px 12px', cursor: 'pointer', color: copiedId === c.id ? '#16A34A' : '#1C2D4F', fontSize: 11.5, fontWeight: 700, fontFamily: "'Almarai',sans-serif", whiteSpace: 'nowrap' }}
+                    >
+                      {copiedId === c.id ? 'تم النسخ' : 'نسخ رابط الموكّل'}
+                    </button>
+                    <WhatsAppButton compact onClick={onWhatsAppClick} />
+                  </div>
                 </td>
               </tr>
             ))}
@@ -202,13 +206,16 @@ export default function ClientsView({ onOpenCase, allClients = clientsDefault, o
                 ) : null; })()}
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => onCopyLink(c.id)}
-              style={{ width: '100%', marginTop: 10, background: copiedId === c.id ? 'rgba(22,163,74,0.1)' : 'rgba(28,45,79,0.07)', border: 'none', borderRadius: 20, padding: '8px 12px', cursor: 'pointer', color: copiedId === c.id ? '#16A34A' : '#1C2D4F', fontSize: 12, fontWeight: 700, fontFamily: "'Almarai',sans-serif" }}
-            >
-              {copiedId === c.id ? 'تم النسخ' : 'نسخ رابط الموكّل'}
-            </button>
+            <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
+              <button
+                type="button"
+                onClick={() => onCopyLink(c.id)}
+                style={{ flex: 1, background: copiedId === c.id ? 'rgba(22,163,74,0.1)' : 'rgba(28,45,79,0.07)', border: 'none', borderRadius: 20, padding: '8px 12px', cursor: 'pointer', color: copiedId === c.id ? '#16A34A' : '#1C2D4F', fontSize: 12, fontWeight: 700, fontFamily: "'Almarai',sans-serif" }}
+              >
+                {copiedId === c.id ? 'تم النسخ' : 'نسخ رابط الموكّل'}
+              </button>
+              <WhatsAppButton compact onClick={onWhatsAppClick} />
+            </div>
           </div>
         ))}
         {filtered.length === 0 && (

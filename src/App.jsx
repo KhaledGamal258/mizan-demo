@@ -253,6 +253,7 @@ export default function App() {
         onOpenCase={openCase}
         allClients={mergedAllClients}
         onCopied={() => showToast('تم نسخ رابط الموكّل ✓')}
+        onWhatsAppClick={() => showToast('التكامل مع واتساب — قريبًا')}
       />
     );
   } else if (lawyerView === 'case') {
@@ -268,6 +269,7 @@ export default function App() {
         onArchive={() => handleArchive(selectedClientId)}
         onRestore={() => handleRestore(selectedClientId)}
         onStatusChange={(newStatus) => handleStatusChange(selectedClientId, newStatus)}
+        onWhatsAppClick={() => showToast('التكامل مع واتساب — قريبًا')}
       />
     );
   } else if (lawyerView === 'add') {
