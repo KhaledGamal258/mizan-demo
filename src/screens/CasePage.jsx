@@ -342,6 +342,78 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
           </div>
         </div>
 
+        {/* TEAM DISCUSSION — internal only, never shown to client */}
+        <div>
+          <div style={{ background: '#fff', borderRadius: 14, border: '1.5px solid rgba(201,168,112,0.4)', boxShadow: '0 2px 16px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+            <div style={{ padding: '14px 15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, borderBottom: '1px solid rgba(201,168,112,0.25)' }}>
+              <span style={{ color: '#B5924A', fontSize: 16, fontWeight: 800 }}>نقاش الفريق</span>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(201,168,112,0.1)', border: '1px solid rgba(201,168,112,0.25)', borderRadius: 20, padding: '4px 11px', flexShrink: 0 }}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+                  <rect x="5" y="11" width="14" height="9" rx="1.8" stroke="#B5924A" strokeWidth="1.8" />
+                  <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="#B5924A" strokeWidth="1.8" strokeLinecap="round" />
+                </svg>
+                <span style={{ color: '#B5924A', fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap' }}>داخلي فقط — غير مرئي للموكّل</span>
+              </div>
+            </div>
+
+            <div style={{ padding: '14px 15px 12px', display: 'flex', flexDirection: 'column', gap: 15 }}>
+              {teamMessages.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '10px 16px', color: '#B2B8C2', fontSize: 12.5 }}>
+                  لا توجد رسائل بعد في نقاش الفريق
+                </div>
+              ) : (
+                teamMessages.map((msg, idx) => {
+                  const member = getTeamMemberById(msg.from);
+                  return (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: 11 }}>
+                      <div style={{ width: 32, height: 32, borderRadius: 9, background: member?.avatarBg || '#F0ECE5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 13, fontWeight: 800, color: member?.avatarColor || '#9BA3AF' }}>
+                        {member?.initial || '?'}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 7, marginBottom: 4, flexWrap: 'wrap' }}>
+                          <span style={{ color: '#1C2D4F', fontSize: 13, fontWeight: 800 }}>{member?.name || 'زميل'}</span>
+                          <span style={{ color: '#C4C9D4', fontSize: 10.5 }}>{msg.time}</span>
+                        </div>
+                        <div style={{ background: '#FBF9F5', border: '1px solid #F0ECE5', borderRadius: 10, padding: '9px 12px', color: '#1C2D4F', fontSize: 12.5, lineHeight: 1.6 }}>
+                          {msg.text}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            <div style={{ borderTop: '1px solid rgba(201,168,112,0.25)' }} />
+            {archived ? (
+              <div style={{ padding: '13px 15px', textAlign: 'center', color: '#B2B8C2', fontSize: 12.5 }}>
+                القضية مؤرشفة — لا يمكن إضافة رسائل جديدة
+              </div>
+            ) : (
+              <div style={{ padding: '11px 14px', display: 'flex', alignItems: 'flex-end', gap: 10 }}>
+                <textarea
+                  value={teamReplyText}
+                  onChange={(e) => setTeamReplyText(e.target.value)}
+                  placeholder="اكتب رسالة للفريق..."
+                  rows={2}
+                  aria-label="رسالة لفريق المكتب"
+                  style={{ flex: 1, background: '#FBF9F5', border: 'none', borderRadius: 10, padding: '9px 12px', fontFamily: "'Almarai',sans-serif", fontSize: 13, color: '#1C2D4F', resize: 'none', outline: 'none', lineHeight: 1.55 }}
+                />
+                <button
+                  type="button"
+                  onClick={onSendTeamReply}
+                  aria-label="إرسال لفريق المكتب"
+                  style={{ width: 36, height: 36, borderRadius: 18, background: '#C9A870', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, marginBottom: 1 }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                    <path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" stroke="#1C2D4F" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* SESSIONS LOG */}
         <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 2px 16px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
           <div style={{ height: 2.5, background: 'linear-gradient(to left, transparent 0%, #C9A870 20%, #C9A870 80%, transparent 100%)' }} />
@@ -534,78 +606,6 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-
-        {/* TEAM DISCUSSION — internal only, never shown to client */}
-        <div>
-          <div style={{ background: '#fff', borderRadius: 14, border: '1.5px solid rgba(201,168,112,0.4)', boxShadow: '0 2px 16px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
-            <div style={{ padding: '14px 15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, borderBottom: '1px solid rgba(201,168,112,0.25)' }}>
-              <span style={{ color: '#B5924A', fontSize: 16, fontWeight: 800 }}>نقاش الفريق</span>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(201,168,112,0.1)', border: '1px solid rgba(201,168,112,0.25)', borderRadius: 20, padding: '4px 11px', flexShrink: 0 }}>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
-                  <rect x="5" y="11" width="14" height="9" rx="1.8" stroke="#B5924A" strokeWidth="1.8" />
-                  <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="#B5924A" strokeWidth="1.8" strokeLinecap="round" />
-                </svg>
-                <span style={{ color: '#B5924A', fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap' }}>داخلي فقط — غير مرئي للموكّل</span>
-              </div>
-            </div>
-
-            <div style={{ padding: '14px 15px 12px', display: 'flex', flexDirection: 'column', gap: 15 }}>
-              {teamMessages.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '10px 16px', color: '#B2B8C2', fontSize: 12.5 }}>
-                  لا توجد رسائل بعد في نقاش الفريق
-                </div>
-              ) : (
-                teamMessages.map((msg, idx) => {
-                  const member = getTeamMemberById(msg.from);
-                  return (
-                    <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: 11 }}>
-                      <div style={{ width: 32, height: 32, borderRadius: 9, background: member?.avatarBg || '#F0ECE5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 13, fontWeight: 800, color: member?.avatarColor || '#9BA3AF' }}>
-                        {member?.initial || '?'}
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 7, marginBottom: 4, flexWrap: 'wrap' }}>
-                          <span style={{ color: '#1C2D4F', fontSize: 13, fontWeight: 800 }}>{member?.name || 'زميل'}</span>
-                          <span style={{ color: '#C4C9D4', fontSize: 10.5 }}>{msg.time}</span>
-                        </div>
-                        <div style={{ background: '#FBF9F5', border: '1px solid #F0ECE5', borderRadius: 10, padding: '9px 12px', color: '#1C2D4F', fontSize: 12.5, lineHeight: 1.6 }}>
-                          {msg.text}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-
-            <div style={{ borderTop: '1px solid rgba(201,168,112,0.25)' }} />
-            {archived ? (
-              <div style={{ padding: '13px 15px', textAlign: 'center', color: '#B2B8C2', fontSize: 12.5 }}>
-                القضية مؤرشفة — لا يمكن إضافة رسائل جديدة
-              </div>
-            ) : (
-              <div style={{ padding: '11px 14px', display: 'flex', alignItems: 'flex-end', gap: 10 }}>
-                <textarea
-                  value={teamReplyText}
-                  onChange={(e) => setTeamReplyText(e.target.value)}
-                  placeholder="اكتب رسالة للفريق..."
-                  rows={2}
-                  aria-label="رسالة لفريق المكتب"
-                  style={{ flex: 1, background: '#FBF9F5', border: 'none', borderRadius: 10, padding: '9px 12px', fontFamily: "'Almarai',sans-serif", fontSize: 13, color: '#1C2D4F', resize: 'none', outline: 'none', lineHeight: 1.55 }}
-                />
-                <button
-                  type="button"
-                  onClick={onSendTeamReply}
-                  aria-label="إرسال لفريق المكتب"
-                  style={{ width: 36, height: 36, borderRadius: 18, background: '#C9A870', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, marginBottom: 1 }}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                    <path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" stroke="#1C2D4F" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </button>
-              </div>
-            )}
           </div>
         </div>
 
