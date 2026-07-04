@@ -4,6 +4,7 @@ const NAV_ITEMS = [
   { key: 'dashboard', label: 'لوحة التحكم' },
   { key: 'clients', label: 'الموكّلون' },
   { key: 'team', label: 'فريق المكتب' },
+  { key: 'inheritance', label: 'حاسبة المواريث' },
 ];
 
 function NavIcon({ active }) {

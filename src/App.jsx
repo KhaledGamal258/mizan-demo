@@ -6,6 +6,7 @@ import ClientsView from './screens/ClientsView';
 import CasePage from './screens/CasePage';
 import AddClient from './screens/AddClient';
 import TeamView from './screens/TeamView';
+import InheritanceCalculator from './screens/InheritanceCalculator';
 import { clients as clientsData, getClientById, upcomingHearings as upcomingHearingsDefault, getCaseStatusOption } from './data/clients';
 import { buildHearingObj, toArNum } from './utils/arabicDate';
 
@@ -278,6 +279,8 @@ export default function App() {
     );
   } else if (lawyerView === 'team') {
     content = <TeamView allClients={mergedAllClients} />;
+  } else if (lawyerView === 'inheritance') {
+    content = <InheritanceCalculator />;
   } else {
     content = (
       <LawyerDashboard
