@@ -270,6 +270,7 @@ export default function App() {
         onRestore={() => handleRestore(selectedClientId)}
         onStatusChange={(newStatus) => handleStatusChange(selectedClientId, newStatus)}
         onWhatsAppClick={() => showToast('التكامل مع واتساب — قريبًا')}
+        onTemplatesClick={() => showToast('قريبًا — نماذج قانونية جاهزة للاستخدام المباشر')}
       />
     );
   } else if (lawyerView === 'add') {

@@ -65,7 +65,7 @@ function NotVisiblePill({ compact }) {
   );
 }
 
-export default function CasePage({ client, lawyerName, onBack, sessions = [], onAddSession, onReassign, onArchive, onRestore, onStatusChange, onWhatsAppClick }) {
+export default function CasePage({ client, lawyerName, onBack, sessions = [], onAddSession, onReassign, onArchive, onRestore, onStatusChange, onWhatsAppClick, onTemplatesClick }) {
   const archived = !!client.archived;
   const [docs, setDocs] = useState(initialDocs);
   const [updates, setUpdates] = useState(initialUpdates);
@@ -701,6 +701,23 @@ export default function CasePage({ client, lawyerName, onBack, sessions = [], on
                   {idx < docs.length - 1 && <div style={{ height: 1, background: '#F0ECE5', margin: '0 15px' }} />}
                 </div>
               ))}
+            </div>
+
+            <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 2px 16px rgba(0,0,0,0.05)', padding: '16px 15px', marginTop: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14, flexWrap: 'wrap' }}>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 4, flexWrap: 'wrap' }}>
+                  <span style={{ color: '#1C2D4F', fontSize: 13.5, fontWeight: 800 }}>نماذج جاهزة (صحف دعاوى، مذكرات)</span>
+                  <span style={{ background: 'rgba(201,168,112,0.16)', color: '#B5924A', fontSize: 9.5, fontWeight: 800, borderRadius: 6, padding: '2px 7px' }}>قريبًا</span>
+                </div>
+                <div style={{ color: '#B2B8C2', fontSize: 11.5 }}>نماذج قانونية جاهزة للاستخدام المباشر — دعاوى، مذكرات دفاع، وأكثر</div>
+              </div>
+              <button
+                type="button"
+                onClick={onTemplatesClick}
+                style={{ background: '#EDEBE6', border: 'none', borderRadius: 20, padding: '8px 16px', color: '#9BA1AE', fontSize: 12, fontWeight: 700, fontFamily: "'Almarai',sans-serif", cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap' }}
+              >
+                استعراض النماذج
+              </button>
             </div>
           </div>
 
